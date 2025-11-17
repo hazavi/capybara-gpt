@@ -1,0 +1,6 @@
+1. Respond with chat history
+2. Better UI
+3. AI models dropdown
+4. Add capybara logo
+5. Edit or redo previous message
+6. Redo AI response

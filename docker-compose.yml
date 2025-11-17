@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: rag-chatbot-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./embeddings:/app/embeddings
+    environment:
+      - OLLAMA_URL=http://host.docker.internal:11434
+    restart: unless-stopped
+    networks:
+      - rag-network
+
+  frontend:
+    build: ./frontend
+    container_name: rag-chatbot-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    restart: unless-stopped
+    networks:
+      - rag-network
+
+networks:
+  rag-network:
+    driver: bridge
+
+volumes:
+  embeddings:
+  data:

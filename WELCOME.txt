@@ -1,0 +1,127 @@
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║                                                                       ║
+║   🦙  RAG CHATBOT - LOCAL LLM WITH DOCUMENT KNOWLEDGE  🦙            ║
+║                                                                       ║
+║   Chat with your documents using a local AI!                         ║
+║   100% Private • 100% Local • 100% Open Source                       ║
+║                                                                       ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────┐
+│  🚀 QUICK START                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  1. Install Ollama from https://ollama.com                         │
+│     └─ Pull a model: ollama pull deepseek-r1                       │
+│                                                                     │
+│  2. Check your environment:                                        │
+│     └─ Windows: .\check-env.ps1                                    │
+│                                                                     │
+│  3. Start the application:                                         │
+│     └─ Windows: .\start.ps1                                        │
+│     └─ Linux/Mac: ./start.sh                                       │
+│                                                                     │
+│  4. Open your browser:                                             │
+│     └─ Frontend:  http://localhost:3000                            │
+│     └─ Backend:   http://localhost:8000                            │
+│     └─ API Docs:  http://localhost:8000/docs                       │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│  ✨ FEATURES                                                        │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ✅ Upload PDF, TXT, and Markdown files                            │
+│  ✅ ChatGPT-style interface                                        │
+│  ✅ Semantic search with ChromaDB                                  │
+│  ✅ Local LLM (LLaMA, Phi, Mistral, etc.)                          │
+│  ✅ REST API with FastAPI                                          │
+│  ✅ Docker support                                                 │
+│  ✅ Privacy-focused (all local)                                    │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│  📚 DOCUMENTATION                                                   │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  📖 INDEX.md             - Documentation navigator                 │
+│  ⚡ QUICKSTART.md        - 5-minute setup guide                    │
+│  📘 README.md            - Complete documentation                  │
+│  🏗️  ARCHITECTURE.md     - System design                           │
+│  🔧 TROUBLESHOOTING.md   - Problem solving                         │
+│  🤝 CONTRIBUTING.md      - Contribution guide                      │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│  🛠️  TECH STACK                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  Backend:     Python + FastAPI + ChromaDB                          │
+│  Frontend:    React + Vite + Tailwind CSS                          │
+│  LLM:         Ollama (DeepSeek-R1, LLaMA, Phi, Mistral)            │
+│  Embeddings:  sentence-transformers                                │
+│  Database:    ChromaDB (vector database)                           │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│  🎯 USE CASES                                                       │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  • Personal Knowledge Base     • Research Assistant                │
+│  • Document Q&A                • Learning Tool                     │
+│  • Technical Documentation     • Private AI Assistant              │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│  🔗 QUICK LINKS                                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  Web UI:      http://localhost:3000                                │
+│  API Server:  http://localhost:8000                                │
+│  API Docs:    http://localhost:8000/docs                           │
+│  Ollama:      http://localhost:11434                               │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│  ⚠️  TROUBLESHOOTING                                                │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  Problem: "Cannot connect to Ollama"                               │
+│  Solution: Run 'ollama serve' in a separate terminal              │
+│                                                                     │
+│  Problem: Port already in use                                      │
+│  Solution: See TROUBLESHOOTING.md → Port Issues                    │
+│                                                                     │
+│  Problem: Dependencies not installing                              │
+│  Solution: Run check-env.ps1 to verify environment                │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│  📊 PROJECT STATS                                                   │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  Total Files:         30+                                          │
+│  Lines of Code:       2,500+                                       │
+│  Documentation:       3,000+ lines                                 │
+│  Languages:           Python, JavaScript, CSS, Markdown            │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+╔═══════════════════════════════════════════════════════════════════════╗
+║                                                                       ║
+║          🎉  READY TO GO? RUN: .\start.ps1  🎉                       ║
+║                                                                       ║
+║     Questions? Check INDEX.md for all documentation links            ║
+║                                                                       ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+Made with ❤️ for the local AI community
+MIT License • Free to use • Fully open source
