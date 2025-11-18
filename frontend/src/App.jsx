@@ -195,7 +195,7 @@ function App() {
                 </svg>
               </button>
               <img src="/capybara.png" alt="Capybara Logo" className="w-8 h-8 object-contain" />
-              <h1 className="text-lg font-semibold text-gray-900 dark:text-white">RAG Chatbot</h1>
+              <h1 className="text-lg font-semibold text-gray-900 dark:text-white">CapybaraGPT</h1>
               {isMemoryFull && (
                 <span className="text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 px-2 py-1 rounded">
                   Memory Full
