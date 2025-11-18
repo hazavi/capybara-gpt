@@ -4,7 +4,7 @@ import requests
 import json
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "llama3.1"  # Change to your pulled model: e.g. "llama3.1", "llama3:8b", "gpt-oss:20b", "deepseek-r1"
+MODEL_NAME = "gpt-oss:20b"  # Change to your pulled model: e.g. "llama3.1", "llama3:8b", "gpt-oss:20b", "deepseek-r1"
 
 def ask_ollama(prompt: str, stream: bool = False, max_tokens: int = 512, temperature: float = 0.8, system: str = None):
     """

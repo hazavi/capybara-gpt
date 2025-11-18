@@ -44,7 +44,7 @@ catch {
     Write-Host ""
     Write-Host "   If this fails, manually run in another terminal:" -ForegroundColor Yellow
     Write-Host "   1. ollama serve" -ForegroundColor Cyan
-    Write-Host "   2. ollama pull llama3.1" -ForegroundColor Cyan
+    Write-Host "   2. ollama pull gpt-oss:20b" -ForegroundColor Cyan
     Write-Host ""
     $continue = Read-Host "Continue anyway? (y/n)"
     if ($continue -ne "y") {
