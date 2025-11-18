@@ -1,5 +1,5 @@
 # Install Backend Dependencies - Handles locked files
-Write-Host "📦 Installing Backend Dependencies" -ForegroundColor Cyan
+Write-Host "[INSTALL] Installing Backend Dependencies" -ForegroundColor Cyan
 Write-Host "===================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -10,7 +10,7 @@ if ($pythonProcesses) {
     Write-Host "Found Python processes running. Stopping them..." -ForegroundColor Yellow
     Stop-Process -Name python* -Force -ErrorAction SilentlyContinue
     Start-Sleep -Seconds 2
-    Write-Host "✅ Stopped Python processes" -ForegroundColor Green
+    Write-Host "[OK] Stopped Python processes" -ForegroundColor Green
 }
 
 Write-Host ""
@@ -24,12 +24,12 @@ pip install --user fastapi uvicorn chromadb pypdf requests sentence-transformers
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host ""
-    Write-Host "✅ All packages installed successfully!" -ForegroundColor Green
+    Write-Host "[OK] All packages installed successfully!" -ForegroundColor Green
     Write-Host ""
     Write-Host "You can now run: .\start-simple.ps1" -ForegroundColor Cyan
 } else {
     Write-Host ""
-    Write-Host "⚠️  Some packages may have failed to install" -ForegroundColor Yellow
+    Write-Host "[WARNING] Some packages may have failed to install" -ForegroundColor Yellow
     Write-Host "Try running this script again, or restart your computer" -ForegroundColor Yellow
 }
 
