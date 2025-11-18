@@ -4,3 +4,4 @@
 4. Add capybara logo
 5. Edit or redo previous message
 6. Redo AI response
+

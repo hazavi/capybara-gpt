@@ -22,6 +22,7 @@ app.add_middleware(
 class Question(BaseModel):
     text: str
     stream: bool = False
+    history: list = []
 
 @app.get("/")
 def root():
@@ -43,7 +44,8 @@ def ask(q: Question):
         else:
             # Return complete answer
             print("Getting answer from RAG...")
-            answer = ask_rag(q.text, stream=False)
+            print(f"Chat history length: {len(q.history)}")
+            answer = ask_rag(q.text, stream=False, history=q.history)
             print(f"Answer received: {answer[:100]}...")
             return {"answer": answer}
     except Exception as e:

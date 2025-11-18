@@ -7,7 +7,7 @@ marked.setOptions({
   gfm: true,
 })
 
-function Chat({ onUploadSuccess }) {
+function Chat({ theme, currentChat, currentChatId, onMessagesUpdate, onUploadSuccess, saveToMemory }) {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -15,6 +15,41 @@ function Chat({ onUploadSuccess }) {
   const [uploadStatus, setUploadStatus] = useState(null)
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
+  const abortControllerRef = useRef(null)
+  const previousChatIdRef = useRef(null)
+
+  // Load messages when currentChatId changes (switching chats)
+  useEffect(() => {
+    // Only reset messages if we're actually switching to a different chat
+    if (previousChatIdRef.current !== currentChatId) {
+      console.log('Chat switched from', previousChatIdRef.current, 'to', currentChatId)
+      
+      // Abort any ongoing request when switching chats
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+        abortControllerRef.current = null
+        setIsLoading(false)
+      }
+      
+      // Clear messages first
+      setMessages([])
+      
+      // Then load messages from history if this is an existing chat
+      if (currentChat && currentChat.messages && currentChat.messages.length > 0) {
+        console.log('Loading', currentChat.messages.length, 'messages from history')
+        setMessages(currentChat.messages)
+      }
+      
+      previousChatIdRef.current = currentChatId
+    }
+  }, [currentChatId, currentChat])
+
+  // Update parent when messages change
+  useEffect(() => {
+    if (currentChatId && saveToMemory && messages.length > 0) {
+      onMessagesUpdate(currentChatId, messages)
+    }
+  }, [messages, currentChatId, saveToMemory])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -89,8 +124,13 @@ function Chat({ onUploadSuccess }) {
     setInput('')
     
     // Add user message
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }])
+    const newMessages = [...messages, { role: 'user', content: userMessage }]
+    setMessages(newMessages)
     setIsLoading(true)
+
+    // Create abort controller for this request
+    const abortController = new AbortController()
+    abortControllerRef.current = abortController
 
     try {
       const response = await fetch('/ask', {
@@ -100,8 +140,10 @@ function Chat({ onUploadSuccess }) {
         },
         body: JSON.stringify({
           text: userMessage,
-          stream: false
+          stream: false,
+          history: messages
         }),
+        signal: abortController.signal
       })
 
       if (!response.ok) {
@@ -110,38 +152,66 @@ function Chat({ onUploadSuccess }) {
 
       const data = await response.json()
       
-      // Add assistant message
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
+      // Add assistant message with complete response
+      setMessages(prev => [...prev, {
+        role: 'assistant',
         content: data.answer || 'No response received.'
       }])
     } catch (error) {
+      // Don't show error if request was aborted (user switched chats)
+      if (error.name === 'AbortError') {
+        console.log('Request aborted - user switched chats')
+        // Remove the empty assistant message
+        setMessages(prev => prev.slice(0, -1))
+        return
+      }
       console.error('Error:', error)
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: '❌ Error: Failed to get response. Make sure Ollama is running and the backend server is accessible.'
-      }])
+      setMessages(prev => {
+        const updated = [...prev]
+        updated[assistantIndex] = {
+          role: 'assistant',
+          content: '❌ Error: Failed to get response. Make sure Ollama is running and the backend server is accessible.'
+        }
+        return updated
+      })
     } finally {
       setIsLoading(false)
+      abortControllerRef.current = null
       inputRef.current?.focus()
     }
   }
 
   const clearChat = () => {
-    setMessages([])
+    if (currentChatId) {
+      setMessages([])
+      // Notify parent to remove from history when cleared
+      if (onMessagesUpdate) {
+        onMessagesUpdate(currentChatId, [])
+      }
+    }
   }
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="h-full flex flex-col bg-white dark:bg-[#0a0a0a] transition-colors">
       {/* Messages Container */}
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="max-w-3xl mx-auto w-full space-y-6">
           {messages.length === 0 ? (
             <div className="h-[60vh] flex items-center justify-center">
-              <div className="text-center text-gray-400">
-                <div className="text-5xl mb-4">💬</div>
-                <p className="text-xl text-gray-600 font-medium">How can I help you today?</p>
-                <p className="text-sm text-gray-400 mt-2">Ask me anything about your documents</p>
+              <div className="text-center text-gray-400 dark:text-gray-500">
+                {!currentChatId ? (
+                  <>
+                    <div className="text-5xl mb-4">💬</div>
+                    <p className="text-xl text-gray-600 dark:text-gray-300 font-medium">Create a new chat to start</p>
+                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">Click "New chat" in the sidebar</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-5xl mb-4">💬</div>
+                    <p className="text-xl text-gray-600 dark:text-gray-300 font-medium">How can I help you today?</p>
+                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">Ask me anything about your documents</p>
+                  </>
+                )}
               </div>
             </div>
           ) : (
@@ -157,8 +227,8 @@ function Chat({ onUploadSuccess }) {
                   <div
                     className={`max-w-[85%] rounded-xl shadow-sm ${
                       message.role === 'user'
-                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white'
-                        : 'bg-white border border-gray-200'
+                        ? 'bg-white dark:bg-[#111111] border border-gray-200 dark:border-[#222222]'
+                        : 'bg-white dark:bg-[#111111] border border-gray-200 dark:border-[#222222]'
                     }`}
                   >
                     <div className="px-4 py-3">
@@ -166,21 +236,39 @@ function Chat({ onUploadSuccess }) {
                         if (part.type === 'code') {
                           return (
                             <div key={partIndex} className="my-3 group relative">
-                              <div className="flex items-center justify-between bg-gray-800 text-gray-100 px-3 py-2 rounded-t-lg text-xs">
-                                <span className="font-mono text-gray-400">{part.language}</span>
+                              <div className={`flex items-center justify-between px-3 py-2 rounded-t-lg text-xs ${
+                                theme === 'dark' 
+                                  ? 'bg-[#1a1a1a] text-gray-100' 
+                                  : 'bg-gray-100 text-gray-700 border border-gray-200'
+                              }`}>
+                                <span className={`font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{part.language}</span>
                                 <button
                                   onClick={() => copyToClipboard(part.content, `${index}-${partIndex}`)}
-                                  className="opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded bg-gray-700 hover:bg-gray-600 text-xs flex items-center gap-1"
+                                  className={`opacity-0 group-hover:opacity-100 transition-opacity px-2 py-1 rounded text-xs flex items-center gap-1 ${
+                                    theme === 'dark'
+                                      ? 'bg-gray-800 hover:bg-gray-700 text-gray-100'
+                                      : 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200'
+                                  }`}
                                 >
                                   {copiedIndex === `${index}-${partIndex}` ? (
                                     <>✓ Copied</>
                                   ) : (
-                                    <>📋 Copy</>
+                                    <>Copy</>
                                   )}
                                 </button>
                               </div>
-                              <pre className="bg-gray-900 text-gray-100 p-4 rounded-b-lg overflow-x-auto">
-                                <code className="font-mono text-sm leading-relaxed">{part.content}</code>
+                              <pre className={`p-4 rounded-b-lg overflow-x-auto ${
+                                theme === 'dark'
+                                  ? 'bg-[#0d0d0d]'
+                                  : 'bg-white border border-t-0 border-gray-200'
+                              }`}>
+                                <code className={`font-mono text-sm leading-relaxed ${
+                                  theme === 'dark'
+                                    ? 'text-[#e6e6e6]'
+                                    : 'text-gray-800'
+                                }`} style={theme === 'dark' ? {
+                                  textShadow: '0 0 1px rgba(100, 200, 255, 0.3)'
+                                } : {}}>{part.content}</code>
                               </pre>
                             </div>
                           )
@@ -189,9 +277,7 @@ function Chat({ onUploadSuccess }) {
                             <div 
                               key={partIndex} 
                               className={`prose prose-sm max-w-none ${
-                                message.role === 'user' 
-                                  ? 'prose-invert text-white' 
-                                  : 'prose-gray'
+                                theme === 'dark' ? 'prose-invert' : 'prose-gray'
                               }`}
                               dangerouslySetInnerHTML={{ __html: marked(part.content) }}
                             />
@@ -200,9 +286,7 @@ function Chat({ onUploadSuccess }) {
                           return (
                             <div 
                               key={partIndex} 
-                              className={`whitespace-pre-wrap break-words ${
-                                message.role === 'user' ? 'text-white' : 'text-gray-800'
-                              }`}
+                              className="whitespace-pre-wrap break-words text-gray-800 dark:text-gray-200"
                             >
                               {part.content}
                             </div>
@@ -216,14 +300,14 @@ function Chat({ onUploadSuccess }) {
             })}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-white border border-gray-200 rounded-xl shadow-sm px-5 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div className="bg-white dark:bg-[#111111] border border-gray-200 dark:border-[#222222] rounded-xl shadow-sm px-5 py-3">
+                  <div className="flex items-center gap-1">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Thinking</span>
+                    <div className="flex gap-0.5">
+                      <span className="text-sm text-gray-500 dark:text-gray-400 animate-pulse" style={{ animationDelay: '0ms', animationDuration: '1.4s' }}>.</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400 animate-pulse" style={{ animationDelay: '200ms', animationDuration: '1.4s' }}>.</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400 animate-pulse" style={{ animationDelay: '400ms', animationDuration: '1.4s' }}>.</span>
                     </div>
-                    <span className="text-sm text-gray-500">Thinking...</span>
                   </div>
                 </div>
               </div>
@@ -235,13 +319,13 @@ function Chat({ onUploadSuccess }) {
       </div>
 
       {/* Input Form */}
-      <div className="border-t border-gray-100 bg-white px-4 py-4">
+      <div className="border-t border-gray-100 dark:border-[#1a1a1a] bg-white dark:bg-[#0d0d0d] px-4 py-4 transition-colors">
         <div className="max-w-3xl mx-auto">
           <form onSubmit={sendMessage} className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => document.getElementById('file-upload-hidden').click()}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1a1a1a] rounded-lg transition-colors"
               title="Upload document"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -255,12 +339,12 @@ function Chat({ onUploadSuccess }) {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Message RAG Chatbot..."
               disabled={isLoading}
-              className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
+              className="flex-1 px-4 py-3 bg-gray-50 dark:bg-[#111111] border border-gray-200 dark:border-[#2a2a2a] rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
             />
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
-              className="p-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
+              className="p-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 disabled:bg-gray-300 dark:disabled:bg-[#1a1a1a] disabled:cursor-not-allowed transition-all"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
@@ -271,7 +355,7 @@ function Chat({ onUploadSuccess }) {
             <div className="mt-2 flex justify-center">
               <button
                 onClick={clearChat}
-                className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
               >
                 Clear conversation
               </button>

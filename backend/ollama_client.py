@@ -6,7 +6,7 @@ import json
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL_NAME = "llama3.1"  # Change to your pulled model: e.g. "llama3.1", "llama3:8b", "phi3:mini", "mistral"
 
-def ask_ollama(prompt: str, stream: bool = False, max_tokens: int = 512, temperature: float = 0.8):
+def ask_ollama(prompt: str, stream: bool = False, max_tokens: int = 512, temperature: float = 0.8, system: str = None):
     """
     Send a prompt to Ollama and get response.
     
@@ -15,6 +15,7 @@ def ask_ollama(prompt: str, stream: bool = False, max_tokens: int = 512, tempera
         stream: Whether to stream the response
         max_tokens: Maximum tokens to generate
         temperature: Temperature for generation (0.0-1.0)
+        system: System prompt with conversation history and context
     
     Returns:
         If stream=False: Complete response string
@@ -27,12 +28,15 @@ def ask_ollama(prompt: str, stream: bool = False, max_tokens: int = 512, tempera
         "options": {
             "temperature": temperature,
             "num_predict": max_tokens,
-            "num_ctx": 2048,  # Reduce context window for speed
+            "num_ctx": 4096,  # Increased for conversation history
             "top_k": 40,
             "top_p": 0.9,
             "repeat_penalty": 1.1,
         }
     }
+    
+    if system:
+        payload["system"] = system
     
     try:
         resp = requests.post(OLLAMA_URL, json=payload, stream=stream, timeout=120)
