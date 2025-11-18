@@ -29,7 +29,7 @@ ollama list
 
 ```bash
 # Pull the model specified in backend/ollama_client.py
-ollama pull deepseek-r1
+ollama pull llama3.1
 
 # Or use a different model
 ollama pull llama3:8b

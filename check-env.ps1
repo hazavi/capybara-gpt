@@ -91,7 +91,7 @@ if (-not $ollamaInstalled) {
                 Write-Host "   - $($model.name)" -ForegroundColor White
             }
         } else {
-            Write-Host "⚠️  No models installed. Run: ollama pull deepseek-r1" -ForegroundColor Yellow
+            Write-Host "⚠️  No models installed. Run: ollama pull llama3.1" -ForegroundColor Yellow
             $allGood = $false
         }
     } catch {

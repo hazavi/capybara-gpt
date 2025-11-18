@@ -328,6 +328,7 @@ ollama pull deepseek-r1
 
 - **Official Docs**: https://github.com/ollama/ollama/blob/main/README.md
 - **Model Library**: https://ollama.com/library
+- **Search Models**: https://ollama.com/search
 - **Discord**: https://discord.gg/ollama
 - **GitHub Issues**: https://github.com/ollama/ollama/issues
 
