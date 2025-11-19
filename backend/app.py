@@ -23,10 +23,19 @@ class Question(BaseModel):
     text: str
     stream: bool = False
     history: list = []
+    personalization: str = ''
+    model: str = ''
 
 @app.get("/")
 def root():
     return {"message": "RAG Chatbot API is running"}
+
+@app.get("/models")
+def get_models():
+    """Get list of available Ollama models."""
+    from ollama_client import get_available_models
+    models = get_available_models()
+    return {"models": models}
 
 @app.post("/ask")
 def ask(q: Question):
@@ -45,7 +54,11 @@ def ask(q: Question):
             # Return complete answer
             print("Getting answer from RAG...")
             print(f"Chat history length: {len(q.history)}")
-            answer = ask_rag(q.text, stream=False, history=q.history)
+            if q.personalization:
+                print(f"Using personalization: {q.personalization[:100]}...")
+            if q.model:
+                print(f"Using model: {q.model}")
+            answer = ask_rag(q.text, stream=False, history=q.history, personalization=q.personalization, model=q.model)
             print(f"Answer received: {answer[:100]}...")
             return {"answer": answer}
     except Exception as e:

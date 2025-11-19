@@ -39,7 +39,7 @@ def add_document_to_rag(doc_id: str, chunks: list[str]):
         metadatas=[{"source": doc_id, "chunk_index": i} for i in range(len(chunks))]
     )
 
-def retrieve_context(query: str, n_results: int = 3) -> str:
+def retrieve_context(query: str, n_results: int = 2) -> str:
     """
     Retrieve relevant context from the knowledge base.
     
@@ -63,18 +63,19 @@ def retrieve_context(query: str, n_results: int = 3) -> str:
         docs = results["documents"][0]
         metadatas = results.get("metadatas", [[]])[0]
         
-        # Format context with sources
+        # Format context with sources (limit length for speed)
         context_parts = []
         for i, (doc, meta) in enumerate(zip(docs, metadatas)):
             source = meta.get("source", "unknown") if meta else "unknown"
-            context_parts.append(f"[Source: {source}]\n{doc}")
+            doc_truncated = doc[:500] + "..." if len(doc) > 500 else doc
+            context_parts.append(f"[Source: {source}]\n{doc_truncated}")
         
         return "\n\n".join(context_parts)
     except Exception as e:
         print(f"Error retrieving context: {e}")
         return ""
 
-def ask_rag(question: str, stream: bool = False, history: list = None):
+def ask_rag(question: str, stream: bool = False, history: list = None, personalization: str = '', model: str = ''):
     """
     Ask a question using RAG (Retrieval Augmented Generation).
     
@@ -82,6 +83,8 @@ def ask_rag(question: str, stream: bool = False, history: list = None):
         question: The question to ask
         stream: Whether to stream the response
         history: Previous conversation messages for context
+        personalization: User's personalization preferences
+        model: Model name to use for generation
     
     Returns:
         If stream=False: Complete answer string
@@ -94,19 +97,21 @@ def ask_rag(question: str, stream: bool = False, history: list = None):
     conversation_context = ""
     if history:
         conversation_context = "Previous conversation:\n"
-        for msg in history[-6:]:  # Last 6 messages (3 exchanges)
+        for msg in history[-4:]:  # Last 4 messages (2 exchanges)
             role = "User" if msg.get("role") == "user" else "Assistant"
             content = msg.get("content", "")
             # Truncate long messages
-            if len(content) > 300:
-                content = content[:300] + "..."
+            if len(content) > 200:
+                content = content[:200] + "..."
             conversation_context += f"{role}: {content}\n"
         conversation_context += "\n"
     
-    # Build system prompt with history
+    # Build system prompt with history and personalization
     system_prompt = None
-    if conversation_context or context:
+    if conversation_context or context or personalization:
         system_parts = []
+        if personalization:
+            system_parts.append(personalization)
         if conversation_context:
             system_parts.append(conversation_context)
         if context:
@@ -119,11 +124,11 @@ def ask_rag(question: str, stream: bool = False, history: list = None):
     # Get response from LLM
     if stream:
         # Return generator for streaming
-        return ask_ollama(prompt, stream=True, system=system_prompt)
+        return ask_ollama(prompt, stream=True, system=system_prompt, model_name=model)
     else:
         # Non-streaming call - ask_ollama is synchronous
         try:
-            return ask_ollama(prompt, stream=False, system=system_prompt)
+            return ask_ollama(prompt, stream=False, system=system_prompt, model_name=model)
         except Exception as e:
             print(f"Error calling Ollama: {e}")
             raise Exception(f"Failed to get response from LLM: {str(e)}")

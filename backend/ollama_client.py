@@ -6,7 +6,7 @@ import json
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL_NAME = "gpt-oss:20b"  # Change to your pulled model: e.g. "llama3.1", "llama3:8b", "gpt-oss:20b", "deepseek-r1"
 
-def ask_ollama(prompt: str, stream: bool = False, max_tokens: int = 512, temperature: float = 0.8, system: str = None):
+def ask_ollama(prompt: str, stream: bool = False, max_tokens: int = 256, temperature: float = 0.7, system: str = None, model_name: str = None):
     """
     Send a prompt to Ollama and get response.
     
@@ -16,19 +16,20 @@ def ask_ollama(prompt: str, stream: bool = False, max_tokens: int = 512, tempera
         max_tokens: Maximum tokens to generate
         temperature: Temperature for generation (0.0-1.0)
         system: System prompt with conversation history and context
+        model_name: Override the default model name
     
     Returns:
         If stream=False: Complete response string
         If stream=True: Generator yielding response chunks
     """
     payload = {
-        "model": MODEL_NAME,
+        "model": model_name or MODEL_NAME,
         "prompt": prompt,
         "stream": stream,
         "options": {
             "temperature": temperature,
             "num_predict": max_tokens,
-            "num_ctx": 4096,  # Increased for conversation history
+            "num_ctx": 2048,  # Optimized for speed
             "top_k": 40,
             "top_p": 0.9,
             "repeat_penalty": 1.1,
@@ -39,7 +40,7 @@ def ask_ollama(prompt: str, stream: bool = False, max_tokens: int = 512, tempera
         payload["system"] = system
     
     try:
-        resp = requests.post(OLLAMA_URL, json=payload, stream=stream, timeout=120)
+        resp = requests.post(OLLAMA_URL, json=payload, stream=stream, timeout=60)
         resp.raise_for_status()
         
         if stream:
@@ -112,3 +113,22 @@ def check_ollama_connection():
         return response.status_code == 200
     except:
         return False
+
+def get_available_models():
+    """Get list of available Ollama models."""
+    try:
+        response = requests.get("http://localhost:11434/api/tags", timeout=5)
+        response.raise_for_status()
+        data = response.json()
+        models = []
+        if "models" in data:
+            for model in data["models"]:
+                models.append({
+                    "name": model.get("name", ""),
+                    "size": model.get("size", 0),
+                    "modified_at": model.get("modified_at", "")
+                })
+        return models
+    except Exception as e:
+        print(f"Error fetching models: {e}")
+        return []

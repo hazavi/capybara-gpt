@@ -7,12 +7,16 @@ marked.setOptions({
   gfm: true,
 })
 
-function Chat({ theme, currentChat, currentChatId, onMessagesUpdate, onUploadSuccess, saveToMemory }) {
+function Chat({ theme, currentChat, currentChatId, onMessagesUpdate, onUploadSuccess, saveToMemory, personalization }) {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [copiedIndex, setCopiedIndex] = useState(null)
   const [uploadStatus, setUploadStatus] = useState(null)
+  const [availableModels, setAvailableModels] = useState([])
+  const [selectedModel, setSelectedModel] = useState(() => {
+    return localStorage.getItem('selectedModel') || ''
+  })
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
   const abortControllerRef = useRef(null)
@@ -51,6 +55,40 @@ function Chat({ theme, currentChat, currentChatId, onMessagesUpdate, onUploadSuc
     }
   }, [messages, currentChatId, saveToMemory])
 
+  // Fetch available models on mount
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const response = await fetch('/models')
+        if (response.ok) {
+          const data = await response.json()
+          setAvailableModels(data.models || [])
+          // Set default model if none selected
+          if (!selectedModel && data.models && data.models.length > 0) {
+            setSelectedModel(data.models[0].name)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching models:', error)
+      }
+    }
+    fetchModels()
+  }, [])
+
+  // Save selected model to localStorage
+  useEffect(() => {
+    if (selectedModel) {
+      localStorage.setItem('selectedModel', selectedModel)
+    }
+  }, [selectedModel])
+
+  // Save selected model to localStorage
+  useEffect(() => {
+    if (selectedModel) {
+      localStorage.setItem('selectedModel', selectedModel)
+    }
+  }, [selectedModel])
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -63,6 +101,61 @@ function Chat({ theme, currentChat, currentChatId, onMessagesUpdate, onUploadSuc
     navigator.clipboard.writeText(text)
     setCopiedIndex(index)
     setTimeout(() => setCopiedIndex(null), 2000)
+  }
+
+  const buildPersonalizationPrompt = () => {
+    if (!personalization) return ''
+    
+    const prompts = []
+    
+    // Base style
+    if (personalization.baseStyle !== 'default') {
+      prompts.push(`Use a ${personalization.baseStyle} writing style.`)
+    }
+    
+    // Conciseness
+    if (personalization.concise === 'more') {
+      prompts.push('Be very concise and brief in your responses.')
+    } else if (personalization.concise === 'less') {
+      prompts.push('Provide detailed and comprehensive explanations.')
+    }
+    
+    // Headers & Lists
+    if (personalization.headers === 'more') {
+      prompts.push('Use more headers, bullet points, and structured formatting.')
+    } else if (personalization.headers === 'less') {
+      prompts.push('Use fewer headers and lists, prefer paragraph format.')
+    }
+    
+    // Warm
+    if (personalization.warm === 'more') {
+      prompts.push('Be warm, friendly, and personable in your tone.')
+    } else if (personalization.warm === 'less') {
+      prompts.push('Maintain a neutral and straightforward tone.')
+    }
+    
+    // Enthusiastic
+    if (personalization.enthusiastic === 'more') {
+      prompts.push('Be enthusiastic and energetic in your responses.')
+    } else if (personalization.enthusiastic === 'less') {
+      prompts.push('Keep responses calm and measured.')
+    }
+    
+    // Formal
+    if (personalization.formal === 'more') {
+      prompts.push('Use formal language and professional terminology.')
+    } else if (personalization.formal === 'less') {
+      prompts.push('Use casual and conversational language.')
+    }
+    
+    // Emoji
+    if (personalization.emoji === 'more') {
+      prompts.push('Use emojis frequently to add expression.')
+    } else if (personalization.emoji === 'less') {
+      prompts.push('Minimize or avoid using emojis.')
+    }
+    
+    return prompts.length > 0 ? '\nPersonalization preferences: ' + prompts.join(' ') : ''
   }
 
   const parseMessageContent = (content) => {
@@ -133,6 +226,8 @@ function Chat({ theme, currentChat, currentChatId, onMessagesUpdate, onUploadSuc
     abortControllerRef.current = abortController
 
     try {
+      const personalizationPrompt = buildPersonalizationPrompt()
+      
       const response = await fetch('/ask', {
         method: 'POST',
         headers: {
@@ -141,7 +236,9 @@ function Chat({ theme, currentChat, currentChatId, onMessagesUpdate, onUploadSuc
         body: JSON.stringify({
           text: userMessage,
           stream: false,
-          history: messages
+          history: messages,
+          personalization: personalizationPrompt,
+          model: selectedModel
         }),
         signal: abortController.signal
       })
@@ -337,10 +434,27 @@ function Chat({ theme, currentChat, currentChatId, onMessagesUpdate, onUploadSuc
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Message RAG Chatbot..."
+              placeholder="Ask anytihing"
               disabled={isLoading}
               className="flex-1 px-4 py-3 bg-gray-50 dark:bg-[#111111] border border-gray-200 dark:border-[#2a2a2a] rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
             />
+            <select
+              value={selectedModel}
+              onChange={(e) => setSelectedModel(e.target.value)}
+              className="px-3 py-3 bg-gray-50 dark:bg-[#111111] border border-gray-200 dark:border-[#2a2a2a] rounded-xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
+              title="Select AI model"
+              disabled={availableModels.length === 0}
+            >
+              {availableModels.length === 0 ? (
+                <option>Loading models...</option>
+              ) : (
+                availableModels.map((model) => (
+                  <option key={model.name} value={model.name}>
+                    {model.name}
+                  </option>
+                ))
+              )}
+            </select>
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
