@@ -17,6 +17,7 @@ function Chat({ theme, currentChat, currentChatId, onMessagesUpdate, onUploadSuc
   const [selectedModel, setSelectedModel] = useState(() => {
     return localStorage.getItem('selectedModel') || ''
   })
+  const [attachedFiles, setAttachedFiles] = useState([])
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
   const abortControllerRef = useRef(null)
@@ -194,31 +195,61 @@ function Chat({ theme, currentChat, currentChatId, onMessagesUpdate, onUploadSuc
   }
 
   const handleFileUpload = async (file) => {
-    setUploadStatus('uploading')
+    // Add file to attached files display
+    const fileObj = {
+      id: Date.now(),
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      status: 'uploading'
+    }
+    setAttachedFiles(prev => [...prev, fileObj])
+    
     try {
       const formData = new FormData()
       formData.append('file', file)
       const response = await fetch('/upload', { method: 'POST', body: formData })
       if (!response.ok) throw new Error('Upload failed')
-      setUploadStatus('success')
-      setTimeout(() => setUploadStatus(null), 3000)
+      
+      // Update file status to uploaded
+      setAttachedFiles(prev => prev.map(f => 
+        f.id === fileObj.id ? { ...f, status: 'uploaded' } : f
+      ))
+      
       if (onUploadSuccess) onUploadSuccess()
     } catch (error) {
-      setUploadStatus('error')
-      setTimeout(() => setUploadStatus(null), 3000)
+      // Update file status to error
+      setAttachedFiles(prev => prev.map(f => 
+        f.id === fileObj.id ? { ...f, status: 'error' } : f
+      ))
     }
+  }
+
+  const removeAttachedFile = (fileId) => {
+    setAttachedFiles(prev => prev.filter(f => f.id !== fileId))
   }
 
   const sendMessage = async (e) => {
     e.preventDefault()
-    if (!input.trim() || isLoading) return
+    if ((!input.trim() && attachedFiles.length === 0) || isLoading) return
 
-    const userMessage = input.trim()
+    const userMessage = input.trim() || 'Summarize or analyze the attached document'
     setInput('')
     
-    // Add user message
-    const newMessages = [...messages, { role: 'user', content: userMessage }]
+    // Add user message with attachments
+    const newMessages = [...messages, { 
+      role: 'user', 
+      content: userMessage,
+      attachments: attachedFiles.filter(f => f.status === 'uploaded').map(f => ({
+        name: f.name,
+        type: f.type
+      }))
+    }]
     setMessages(newMessages)
+    
+    // Clear attachments after sending
+    setAttachedFiles([])
+    
     setIsLoading(true)
 
     // Create abort controller for this request
@@ -228,13 +259,20 @@ function Chat({ theme, currentChat, currentChatId, onMessagesUpdate, onUploadSuc
     try {
       const personalizationPrompt = buildPersonalizationPrompt()
       
+      // Add context about uploaded documents if there were attachments
+      let messageWithContext = userMessage
+      if (newMessages[newMessages.length - 1].attachments && newMessages[newMessages.length - 1].attachments.length > 0) {
+        const fileNames = newMessages[newMessages.length - 1].attachments.map(f => f.name).join(', ')
+        messageWithContext = `I have uploaded the following document(s): ${fileNames}. ${userMessage}`
+      }
+      
       const response = await fetch('/ask', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          text: userMessage,
+          text: messageWithContext,
           stream: false,
           history: messages,
           personalization: personalizationPrompt,
@@ -328,6 +366,26 @@ function Chat({ theme, currentChat, currentChatId, onMessagesUpdate, onUploadSuc
                         : 'bg-white dark:bg-[#111111] border border-gray-200 dark:border-[#222222]'
                     }`}
                   >
+                    {/* Show attachments for user messages */}
+                    {message.role === 'user' && message.attachments && message.attachments.length > 0 && (
+                      <div className="px-4 pt-3 pb-2 border-b border-gray-200 dark:border-[#222222]">
+                        {message.attachments.map((file, idx) => (
+                          <div key={idx} className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-[#0a0a0a] rounded-lg mb-2 last:mb-0">
+                            <div className="w-8 h-8 flex items-center justify-center bg-red-500 rounded">
+                              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                              </svg>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-xs font-medium text-gray-900 dark:text-white truncate">{file.name}</div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400">
+                                {file.type.includes('pdf') ? 'PDF' : file.type.includes('text') ? 'TXT' : 'MD'}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     <div className="px-4 py-3">
                       {messageParts.map((part, partIndex) => {
                         if (part.type === 'code') {
@@ -418,6 +476,56 @@ function Chat({ theme, currentChat, currentChatId, onMessagesUpdate, onUploadSuc
       {/* Input Form */}
       <div className="border-t border-gray-100 dark:border-[#1a1a1a] bg-white dark:bg-[#0d0d0d] px-4 py-4 transition-colors">
         <div className="max-w-3xl mx-auto">
+          {/* Attached Files Display */}
+          {attachedFiles.length > 0 && (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {attachedFiles.map((file) => (
+                <div
+                  key={file.id}
+                  className="flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#2a2a2a] rounded-lg"
+                >
+                  <div className="flex items-center gap-2 flex-1">
+                    <div className={`w-8 h-8 flex items-center justify-center rounded ${
+                      file.status === 'uploaded' ? 'bg-green-500' :
+                      file.status === 'error' ? 'bg-red-500' :
+                      'bg-blue-500'
+                    }`}>
+                      {file.status === 'uploading' ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      ) : file.status === 'uploaded' ? (
+                        <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      ) : (
+                        <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white truncate">{file.name}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {file.status === 'uploading' ? 'Uploading...' :
+                         file.status === 'uploaded' ? 'Uploaded' :
+                         file.status === 'error' ? 'Upload failed' :
+                         file.type.includes('pdf') ? 'PDF' : file.type.includes('text') ? 'TXT' : 'MD'}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeAttachedFile(file.id)}
+                    className="p-1 hover:bg-gray-200 dark:hover:bg-[#222222] rounded transition-colors"
+                  >
+                    <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          
           <form onSubmit={sendMessage} className="flex items-center gap-2">
             <button
               type="button"
@@ -490,19 +598,6 @@ function Chat({ theme, currentChat, currentChatId, onMessagesUpdate, onUploadSuc
           }}
         />
       </div>
-      {uploadStatus && (
-        <div className="fixed top-4 right-4 z-50">
-          <div className={`px-4 py-2 rounded-lg shadow-lg text-sm ${
-            uploadStatus === 'success' ? 'bg-green-500 text-white' : 
-            uploadStatus === 'error' ? 'bg-red-500 text-white' : 
-            'bg-blue-500 text-white'
-          }`}>
-            {uploadStatus === 'success' ? '✓ Document uploaded' : 
-             uploadStatus === 'error' ? '✗ Upload failed' : 
-             'Uploading...'}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
