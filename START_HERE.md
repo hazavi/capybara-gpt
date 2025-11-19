@@ -1,6 +1,10 @@
 # 📖 Start Here!
 
-Welcome! This is a **RAG Chatbot** - upload your documents and chat with them using AI that runs 100% locally on your computer.
+Welcome to **CapybaraGPT** - Your private ChatGPT alternative that runs 100% locally on your computer!
+
+💬 **Chat about anything** - Ask questions, get coding help, brainstorm ideas
+📄 **Analyze documents** - Upload PDFs/TXT/MD files and ask questions about them
+🔒 **Complete privacy** - Everything stays on your machine, no cloud, no tracking
 
 ## 🎯 What You Need to Know
 
@@ -17,7 +21,7 @@ ollama serve
 # 3. Open http://localhost:3000 in your browser
 ```
 
-That's it! Click the **+** button to upload a document and start chatting.
+That's it! Start chatting immediately, or click the **+** button to upload documents for analysis.
 
 ---
 
@@ -43,8 +47,10 @@ That's it! Click the **+** button to upload a document and start chatting.
 
 ## 💡 Quick Tips
 
+- **Ask anything**: General questions, coding help, creative tasks - no documents needed!
+- **Switch models**: Use the dropdown menu in chat to change AI models
+- **Personalize**: Click Settings (⚙️) to customize AI personality and style
 - **Check your setup**: Run `.\check-env.ps1`
-- **View API docs**: Visit http://localhost:8000/docs when running
 - **Try different models**: See https://ollama.com/search
 - **Having issues?** Check [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
 

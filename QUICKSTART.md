@@ -23,12 +23,20 @@ This automatically installs dependencies and starts both backend + frontend.
 
 Go to **http://localhost:3000**
 
-## Step 4: Use It!
+## Step 4: Start Chatting!
+
+**Ask anything immediately:**
+
+- "Explain quantum computing in simple terms"
+- "Write a Python function to reverse a string"
+- "What are the benefits of meditation?"
+
+**Or analyze documents:**
 
 1. Click the **+** button next to the message input
 2. Upload a PDF/TXT/MD file
 3. Wait for "Document uploaded successfully"
-4. Ask questions about your document in the chat!
+4. Ask questions about your document!
 
 ---
 
@@ -45,6 +53,13 @@ ollama serve  # Run this first
 ```bash
 ollama list  # Check your models
 ```
+
+**Try these features:**
+
+- 🎨 **Settings** - Click ⚙️ to customize AI personality
+- 🤖 **Model Selector** - Switch between AI models (dropdown next to send button)
+- 💬 **Chat History** - Manage conversations in sidebar
+- 🌓 **Theme** - Dark/light mode in settings
 
 **Need detailed help?**
 
