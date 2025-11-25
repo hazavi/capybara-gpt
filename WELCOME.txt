@@ -123,5 +123,4 @@
 ║                                                                       ║
 ╚═══════════════════════════════════════════════════════════════════════╝
 
-Made with ❤️ for the local AI community
 MIT License • Free to use • Fully open source
