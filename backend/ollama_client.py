@@ -6,14 +6,14 @@ import json
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL_NAME = "gpt-oss:20b"  # Change to your pulled model: e.g. "llama3.1", "llama3:8b", "gpt-oss:20b", "deepseek-r1"
 
-def ask_ollama(prompt: str, stream: bool = False, max_tokens: int = 256, temperature: float = 0.7, system: str = None, model_name: str = None):
+def ask_ollama(prompt: str, stream: bool = False, max_tokens: int = 2048, temperature: float = 0.7, system: str = None, model_name: str = None):
     """
     Send a prompt to Ollama and get response.
     
     Args:
         prompt: The prompt to send
         stream: Whether to stream the response
-        max_tokens: Maximum tokens to generate
+        max_tokens: Maximum tokens to generate (default 2048 for complete responses)
         temperature: Temperature for generation (0.0-1.0)
         system: System prompt with conversation history and context
         model_name: Override the default model name
@@ -22,17 +22,58 @@ def ask_ollama(prompt: str, stream: bool = False, max_tokens: int = 256, tempera
         If stream=False: Complete response string
         If stream=True: Generator yielding response chunks
     """
+    # ========================================
+    # ⚡ PERFORMANCE TUNING - ADJUST THESE VALUES FOR FASTER/BETTER RESPONSES
+    # ========================================
+    
     payload = {
         "model": model_name or MODEL_NAME,
         "prompt": prompt,
         "stream": stream,
         "options": {
+            # 🎯 temperature: Controls randomness (0.0-1.0)
+            #    Lower = more focused/deterministic, Higher = more creative/random
+            #    Default: 0.7 (balanced)
             "temperature": temperature,
+            
+            # 🎯 num_predict: Maximum tokens to generate
+            #    Lower = faster but may cut off responses, Higher = complete but slower
+            #    Default: 2048 (good for most responses)
+            #    Try: 1024 for faster, 4096 for very long responses
             "num_predict": max_tokens,
-            "num_ctx": 2048,  # Optimized for speed
+            
+            # 🎯 num_ctx: Context window size (how much conversation history to remember)
+            #    Lower = faster, Higher = better context understanding
+            #    Default: 2048 (balanced speed/context)
+            #    Try: 1024 for faster, 4096 for better long conversations
+            "num_ctx": 2048,
+            
+            # 🎯 top_k: Limits next token selection to top K candidates
+            #    Lower = more focused, Higher = more diverse
+            #    Default: 40 (good balance)
             "top_k": 40,
+            
+            # 🎯 top_p: Nucleus sampling - cumulative probability threshold
+            #    Lower = more focused, Higher = more diverse
+            #    Default: 0.9 (recommended)
             "top_p": 0.9,
+            
+            # 🎯 repeat_penalty: Penalizes repetitive text
+            #    1.0 = no penalty, >1.0 = reduce repetition
+            #    Default: 1.1 (slight penalty)
             "repeat_penalty": 1.1,
+            
+            # 🎯 num_thread: CPU threads for processing (⚡ SPEED BOOST)
+            #    More threads = faster processing (if CPU allows)
+            #    Default: 8 threads
+            #    Try: 4 for low-end CPUs, 16+ for high-end CPUs
+            "num_thread": 8,
+            
+            # 🎯 num_gpu: Number of GPU layers to use (⚡⚡ MAJOR SPEED BOOST)
+            #    0 = CPU only (slow), 1 = use GPU (fast), -1 = use all GPU layers
+            #    Default: 1 (enable GPU if available)
+            #    Set to 0 if no GPU, or -1 to max GPU usage
+            "num_gpu": 1,
         }
     }
     
@@ -40,7 +81,11 @@ def ask_ollama(prompt: str, stream: bool = False, max_tokens: int = 256, tempera
         payload["system"] = system
     
     try:
-        resp = requests.post(OLLAMA_URL, json=payload, stream=stream, timeout=60)
+        # 🎯 timeout: Maximum wait time for response (in seconds)
+        #    Lower = fail faster on errors, Higher = allow slower models to complete
+        #    Default: 300 seconds (5 minutes) - good for large models
+        #    Try: 120 for faster models, 600 for very large models
+        resp = requests.post(OLLAMA_URL, json=payload, stream=stream, timeout=300)
         resp.raise_for_status()
         
         if stream:

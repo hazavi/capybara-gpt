@@ -25,6 +25,8 @@ Go to **http://localhost:3000**
 
 ## Step 4: Start Chatting!
 
+> ⏱️ **Note**: AI responses take seconds or minutes depending on your computer's speed and model size. Smaller models like `phi3:mini` are faster but less capable.
+
 **Ask anything immediately:**
 
 - "Explain quantum computing in simple terms"

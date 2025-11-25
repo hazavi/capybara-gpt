@@ -161,6 +161,9 @@ function App() {
   const currentChat = getCurrentChat()
   const memoryUsage = chatHistory.reduce((acc, chat) => acc + chat.messages.length, 0)
   const isMemoryFull = memoryUsage > 100
+  
+  // Check if current chat has any messages (to lock the memory toggle)
+  const currentChatHasMessages = currentChat && currentChat.messages && currentChat.messages.length > 0
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -176,51 +179,44 @@ function App() {
   return (
     <div className="h-screen flex bg-white dark:bg-[#0a0a0a] transition-colors">
       {/* Sidebar */}
-      <div className={`${sidebarOpen ? 'w-64' : 'w-0'} flex-shrink-0 border-r border-gray-200 dark:border-[#1a1a1a] bg-white dark:bg-[#0d0d0d] transition-all duration-300 overflow-hidden flex flex-col`}>
+      <div className={`${sidebarOpen ? 'w-64' : 'w-12'} flex-shrink-0 border-r border-border bg-sidebar transition-all duration-300 flex flex-col`}>
         {/* Sidebar Header */}
-        <div className="p-3 border-b border-gray-200 dark:border-[#1a1a1a]">
+        <div className={`p-3 border-sidebar-border ${!sidebarOpen && 'flex justify-center'}`}>
           <button
             onClick={createNewChat}
-            className="w-full flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-[#1a1a1a] hover:bg-gray-200 dark:hover:bg-[#222222] rounded-lg transition-colors text-sm text-gray-700 dark:text-gray-300"
+            className={`flex items-center justify-center gap-2 bg-sidebar-accent hover:bg-sidebar-accent/80 rounded-lg transition-all text-sm font-medium text-sidebar-accent-foreground shadow-sm ${
+              sidebarOpen ? 'w-full px-4 py-3' : 'p-3'
+            }`}
+            title={!sidebarOpen ? "New Chat" : ""}
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
-            New chat
+            {sidebarOpen && <span>New Chat</span>}
           </button>
-        </div>
-
-        {/* Memory Settings */}
-        <div className="p-3 border-b border-gray-200 dark:border-[#1a1a1a]">
-          <label className="flex items-center justify-between text-xs cursor-pointer">
-            <span className="text-gray-600 dark:text-gray-400">Save to memory</span>
-            <input
-              type="checkbox"
-              checked={saveToMemory}
-              onChange={(e) => setSaveToMemory(e.target.checked)}
-              className="w-4 h-4 rounded"
-            />
-          </label>
         </div>
 
         {/* Chat List */}
-        <div className="flex-1 overflow-y-auto p-2">
-          <button 
-            onClick={() => setChatsCollapsed(!chatsCollapsed)}
-            className="w-full flex items-center justify-between text-xs font-semibold text-gray-500 dark:text-gray-400 px-2 py-1 mb-1 hover:bg-gray-100 dark:hover:bg-[#1a1a1a] rounded transition-colors"
-          >
-            <span>Chats</span>
-            <svg 
-              className={`w-3 h-3 transition-transform ${chatsCollapsed ? '-rotate-90' : ''}`} 
-              fill="none" 
-              viewBox="0 0 24 24" 
-              stroke="currentColor"
+        <div className="flex-1 overflow-y-auto p-3">
+          {sidebarOpen && (
+            <button 
+              onClick={() => setChatsCollapsed(!chatsCollapsed)}
+              className="w-full flex items-center justify-between text-xs font-semibold text-muted-foreground px-2 py-2 mb-2 hover:text-sidebar-foreground rounded-md transition-colors"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
+              <span>RECENT</span>
+              <svg 
+                className={`w-3 h-3 transition-transform ${chatsCollapsed ? '-rotate-90' : ''}`} 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          )}
           
-          {!chatsCollapsed && chatHistory.filter(chat => chat.messages.length > 0).map(chat => (
+          {sidebarOpen && !chatsCollapsed && chatHistory.filter(chat => chat.messages.length > 0).map(chat => (
             <div key={chat.id} className="relative group">
               {renamingChatId === chat.id ? (
                 <div className="px-3 py-2 mb-1">
@@ -243,19 +239,19 @@ function App() {
               ) : (
                 <button
                   onClick={() => loadChat(chat.id)}
-                  className={`w-full text-left px-3 py-2 rounded-lg mb-1 text-sm transition-colors relative ${
+                  className={`w-full flex items-center gap-2 rounded-lg mb-1 text-sm transition-all relative group/item px-3 py-2.5 text-left ${
                     currentChatId === chat.id
-                      ? 'bg-gray-200 dark:bg-[#1a1a1a] text-gray-900 dark:text-white'
-                      : 'hover:bg-gray-100 dark:hover:bg-[#1a1a1a] text-gray-600 dark:text-gray-400'
+                      ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
+                      : 'hover:bg-sidebar-accent/50 text-sidebar-foreground/70 hover:text-sidebar-foreground'
                   }`}
                 >
-                  <div className="truncate pr-8">{chat.title}</div>
+                  <div className="truncate pr-8 flex-1">{chat.title}</div>
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
                       setOpenMenuId(openMenuId === chat.id ? null : chat.id)
                     }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-300 dark:hover:bg-[#222222] rounded transition-opacity"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-100 p-1.5 hover:bg-sidebar-accent rounded-md transition-all"
                   >
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
                       <circle cx="2" cy="8" r="1.5"/>
@@ -294,16 +290,19 @@ function App() {
         </div>
 
         {/* Settings Button at Bottom */}
-        <div className="p-3 border-t border-gray-200 dark:border-[#1a1a1a]">
+        <div className={`p-3 border-sidebar-border ${!sidebarOpen && 'flex justify-center'}`}>
           <button
             onClick={() => setSettingsOpen(true)}
-            className="w-full flex items-center gap-2 px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#1a1a1a] rounded-lg transition-colors text-sm"
+            className={`flex items-center gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-lg transition-all text-sm ${
+              sidebarOpen ? 'w-full px-3 py-3' : 'p-3'
+            }`}
+            title={!sidebarOpen ? "Settings" : ""}
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <svg className={`${sidebarOpen ? 'w-5 h-5' : 'w-6 h-6'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            Settings
+            {sidebarOpen && <span>Settings</span>}
           </button>
         </div>
       </div>
@@ -537,6 +536,43 @@ function App() {
               )}
             </div>
             <div className="flex items-center gap-3">
+              {/* Temporary Chat Toggle */}
+              <button
+                onClick={() => !currentChatHasMessages && setSaveToMemory(!saveToMemory)}
+                disabled={currentChatHasMessages}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  currentChatHasMessages
+                    ? saveToMemory
+                      ? 'bg-gray-100 dark:bg-[#1a1a1a] text-gray-500 dark:text-gray-500 cursor-not-allowed opacity-60'
+                      : 'bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed opacity-60'
+                    : saveToMemory
+                      ? 'bg-gray-100 dark:bg-[#1a1a1a] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#222222] cursor-pointer'
+                      : 'bg-gray-800 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-100 cursor-pointer'
+                }`}
+                title={
+                  currentChatHasMessages
+                    ? 'Cannot change memory setting once conversation has started'
+                    : saveToMemory 
+                      ? 'Conversations are saved' 
+                      : 'Temporary chat - not saved'
+                }
+              >
+                {saveToMemory ? (
+                  <>
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Saved</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Temporary chat</span>
+                  </>
+                )}
+              </button>
               <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-[#1a1a1a] px-3 py-1.5 rounded-full">
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                 <span>Connected</span>

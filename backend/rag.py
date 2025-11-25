@@ -50,6 +50,14 @@ def retrieve_context(query: str, n_results: int = 2) -> str:
     Returns:
         Concatenated context string
     """
+    # ========================================
+    # ⚡ RAG PERFORMANCE TUNING
+    # ========================================
+    # 🎯 n_results: Number of document chunks to retrieve
+    #    Lower = faster but less context, Higher = slower but more complete
+    #    Default: 2 (good for most queries)
+    #    Try: 1 for speed, 3-5 for complex questions
+    
     try:
         results = collection.query(
             query_texts=[query],
@@ -63,7 +71,10 @@ def retrieve_context(query: str, n_results: int = 2) -> str:
         docs = results["documents"][0]
         metadatas = results.get("metadatas", [[]])[0]
         
-        # Format context with sources (limit length for speed)
+        # 🎯 doc_truncated: Truncate each document chunk
+        #    Lower = faster processing, Higher = more context per chunk
+        #    Default: 500 characters (balanced)
+        #    Try: 300 for speed, 1000 for detailed context
         context_parts = []
         for i, (doc, meta) in enumerate(zip(docs, metadatas)):
             source = meta.get("source", "unknown") if meta else "unknown"
@@ -93,23 +104,48 @@ def ask_rag(question: str, stream: bool = False, history: list = None, personali
     # Retrieve relevant context from documents
     context = retrieve_context(question)
     
-    # Build conversation history for system prompt
+    # ========================================
+    # ⚡ CONVERSATION HISTORY TUNING FOR FASTER RESPONSES
+    # ========================================
+    # 🎯 history[-2:]: Number of previous messages to include
+    #    Lower = faster but less conversational context
+    #    Higher = slower but AI remembers more of the conversation
+    #    Default: last 2 messages (1 user + 1 assistant exchange)
+    #    Try: history[-1:] for fastest, history[-4:] for better context
+    
     conversation_context = ""
     if history:
         conversation_context = "Previous conversation:\n"
-        for msg in history[-4:]:  # Last 4 messages (2 exchanges)
+        for msg in history[-2:]:
             role = "User" if msg.get("role") == "user" else "Assistant"
             content = msg.get("content", "")
-            # Truncate long messages
-            if len(content) > 200:
-                content = content[:200] + "..."
+            
+            # 🎯 Truncate long messages: Limit character count per message
+            #    Lower = faster processing, Higher = more context
+            #    Default: 150 characters (good for speed)
+            #    Try: 100 for faster, 300 for more context
+            if len(content) > 150:
+                content = content[:150] + "..."
             conversation_context += f"{role}: {content}\n"
         conversation_context += "\n"
     
-    # Build system prompt with history and personalization
+    # ========================================
+    # 🎯 SYSTEM PROMPT CUSTOMIZATION
+    # ========================================
+    # Edit the system prompt below to change AI personality and behavior
+    # Shorter prompts = faster responses, Detailed prompts = more specific behavior
+    
     system_prompt = None
     if conversation_context or context or personalization:
-        system_parts = []
+        system_parts = [
+            # 🎯 Default AI personality - Edit this to change behavior!
+            "You are a helpful AI assistant. Provide complete, well-structured answers.",
+            "Always finish your thoughts completely - do not cut off mid-sentence."
+            # Examples to try:
+            # "You are a coding expert. Provide concise, practical solutions."
+            # "You are a friendly tutor. Explain concepts clearly with examples."
+            # "You are a research assistant. Provide detailed, factual answers."
+        ]
         if personalization:
             system_parts.append(personalization)
         if conversation_context:
@@ -117,9 +153,12 @@ def ask_rag(question: str, stream: bool = False, history: list = None, personali
         if context:
             system_parts.append(f"Relevant document context:\n{context}")
         system_prompt = "\n\n".join(system_parts)
+    else:
+        # 🎯 Default system prompt when no context - Edit to change default behavior!
+        system_prompt = "You are a helpful AI assistant. Provide complete, well-structured answers. Always finish your thoughts completely - do not cut off mid-sentence."
     
     # Build the current question prompt
-    prompt = f"Question: {question}\n\nAnswer:"
+    prompt = f"{question}"
     
     # Get response from LLM
     if stream:

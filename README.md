@@ -1,4 +1,4 @@
-# 🦫 CapybaraGPT - Your Private ChatGPT Alternative
+# CapybaraGPT
 
 A powerful AI assistant that runs completely on your local machine. Chat about anything, get help with coding, upload documents for analysis, and maintain complete privacy. Think ChatGPT, but 100% offline!
 
@@ -23,6 +23,23 @@ ollama serve
 ### 3. Open Browser
 
 Go to **http://localhost:3000** and start chatting!
+
+---
+
+## ⏱️ Response Time Note
+
+**AI responses can take seconds or minutes depending on:**
+
+- Your computer's CPU/GPU speed
+- Model size (larger models = slower but smarter)
+- Question complexity
+- Document context being used
+
+**To speed up responses:**
+
+- Use a smaller model like `phi3:mini` or `llama3.1:8b`
+- Enable GPU acceleration (automatically enabled)
+- Check `backend/ollama_client.py` and `backend/rag.py` for tuning options (all settings are commented)
 
 ---
 
@@ -131,6 +148,32 @@ Click the **Settings** button (⚙️) in the sidebar to customize:
 
 - **Backend**: Edit `backend/app.py` (default: 8000)
 - **Frontend**: Edit `frontend/vite.config.js` (default: 3000)
+
+### Speed Up AI Responses ⚡
+
+**Backend code has detailed comments for tuning:**
+
+1. **`backend/ollama_client.py`** - Adjust these for faster responses:
+
+   - `num_predict`: Lower = faster (try 1024)
+   - `num_ctx`: Lower = faster (try 1024)
+   - `num_thread`: Higher = faster if CPU allows (try 16)
+   - `num_gpu`: Set to `-1` to use all GPU layers (fastest)
+   - `timeout`: Lower to fail faster (try 120)
+
+2. **`backend/rag.py`** - Adjust these for faster RAG:
+
+   - `n_results`: Number of document chunks (try 1 for speed)
+   - `doc_truncated`: Character limit per chunk (try 300)
+   - `history[-2:]`: Conversation memory (try `[-1:]` for speed)
+   - Truncation limit: 150 chars (try 100)
+
+3. **System Prompts** - Edit in `backend/rag.py`:
+   - Shorter prompts = faster responses
+   - Customize AI personality and behavior
+   - All locations marked with 🎯 comments
+
+**All tuning options are documented with inline comments in the code!**
 
 ## 💡 Usage Examples
 

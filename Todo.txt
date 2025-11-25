@@ -1,8 +1,4 @@
-2. Better UI
-3. AI models dropdown
-5. Edit or redo previous message
-6. Redo AI response
-7. Add settings with configuration of emojis and language
-8. Response generate line for line 
-9. Make the chat histories in the sidebar have 3 dots horizon line as settings for rename title chat and delete
-10. Put the 
+Better sidebar and model dropdown UI
+Response generate line for line 
+attached file
+read attached image
