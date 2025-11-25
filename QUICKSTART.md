@@ -1,29 +1,43 @@
-# 🚀 3-Minute Quick Start
+# 🚀 Quick Start Guide
 
-## Step 1: Install Ollama
+**Get CapybaraGPT running in 3 minutes.**
 
-Download from **[ollama.com](https://ollama.com)** then:
+---
+
+## Prerequisites
+
+✅ Python 3.11+ installed  
+✅ Node.js 18+ installed  
+✅ 8GB+ RAM recommended
+
+---
+
+## Installation Steps
+
+### 1️⃣ Install Ollama
+
+Download from **[ollama.com](https://ollama.com)**
 
 ```bash
 ollama pull llama3.1
 ollama serve
 ```
 
-> Keep this terminal open!
+> 💡 Keep this terminal open
 
-## Step 2: Start Everything
+### 2️⃣ Start Application
 
 ```powershell
 .\start.ps1
 ```
 
-This automatically installs dependencies and starts both backend + frontend.
+> Automatically installs dependencies and starts both servers
 
-## Step 3: Open Browser
+### 3️⃣ Open Browser
 
-Go to **http://localhost:3000**
+Navigate to **http://localhost:3000**
 
-## Step 4: Start Chatting!
+### 4️⃣ Start Chatting!
 
 > ⏱️ **Note**: AI responses take seconds or minutes depending on your computer's speed and model size. Smaller models like `phi3:mini` are faster but less capable.
 
@@ -42,29 +56,40 @@ Go to **http://localhost:3000**
 
 ---
 
-## ❓ Problems?
+---
 
-**Ollama not working?**
+## 🔧 Troubleshooting
+
+### Common Issues
+
+| Problem               | Solution                     |
+| --------------------- | ---------------------------- |
+| Ollama not responding | Run `ollama serve` first     |
+| Port conflict         | Check with `.\check-env.ps1` |
+| Model not found       | Run `ollama list` to verify  |
+
+### Verify Installation
 
 ```bash
-ollama serve  # Run this first
+ollama list          # Check installed models
+ollama ps            # Check running models
+.\check-env.ps1      # Verify environment
 ```
 
-**Already installed before?**
+---
 
-```bash
-ollama list  # Check your models
-```
+## 🎯 Next Steps
 
-**Try these features:**
+### Explore Features
 
-- 🎨 **Settings** - Click ⚙️ to customize AI personality
-- 🤖 **Model Selector** - Switch between AI models (dropdown next to send button)
-- 💬 **Chat History** - Manage conversations in sidebar
-- 🌓 **Theme** - Dark/light mode in settings
+- 🎨 **Customize AI** → Click Settings (⚙️) in sidebar
+- 🤖 **Change Model** → Use dropdown next to send button
+- 💬 **Manage Chats** → Rename/delete in sidebar
+- 🌓 **Toggle Theme** → Dark/light mode in settings
 
-**Need detailed help?**
+### Learn More
 
-- Full guide: [README.md](README.md)
-- Installation issues: [docs/OLLAMA_INSTALL.md](docs/OLLAMA_INSTALL.md)
-- Other problems: [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
+- 📚 **Full Documentation** → [README.md](README.md)
+- 🏗️ **Architecture** → [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- 🤝 **Contributing** → [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)
+- 🐛 **Issues?** → [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)

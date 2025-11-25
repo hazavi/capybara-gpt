@@ -1,9 +1,9 @@
 
 ╔═══════════════════════════════════════════════════════════════════════╗
 ║                                                                       ║
-║   🦙  RAG CHATBOT - LOCAL LLM WITH DOCUMENT KNOWLEDGE  🦙            ║
+║   🦫  CAPYBARAGPT - PRIVATE CHATGPT ALTERNATIVE  🦫                  ║
 ║                                                                       ║
-║   Chat with your documents using a local AI!                         ║
+║   Chat, code, and analyze documents with local AI                    ║
 ║   100% Private • 100% Local • 100% Open Source                       ║
 ║                                                                       ║
 ╚═══════════════════════════════════════════════════════════════════════╝
@@ -13,14 +13,13 @@
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │
 │  1. Install Ollama from https://ollama.com                         │
-│     └─ Pull a model: ollama pull deepseek-r1                       │
+│     └─ Pull a model: ollama pull llama3.1                          │
 │                                                                     │
 │  2. Check your environment:                                        │
-│     └─ Windows: .\check-env.ps1                                    │
+│     └─ Run: .\check-env.ps1                                        │
 │                                                                     │
 │  3. Start the application:                                         │
-│     └─ Windows: .\start.ps1                                        │
-│     └─ Linux/Mac: ./start.sh                                       │
+│     └─ Run: .\start.ps1 (Windows) or ./start.sh (Linux/Mac)       │
 │                                                                     │
 │  4. Open your browser:                                             │
 │     └─ Frontend:  http://localhost:3000                            │
@@ -33,13 +32,13 @@
 │  ✨ FEATURES                                                        │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │
-│  ✅ Upload PDF, TXT, and Markdown files                            │
-│  ✅ ChatGPT-style interface                                        │
-│  ✅ Semantic search with ChromaDB                                  │
-│  ✅ Local LLM (LLaMA, Phi, Mistral, etc.)                          │
-│  ✅ REST API with FastAPI                                          │
-│  ✅ Docker support                                                 │
-│  ✅ Privacy-focused (all local)                                    │
+│  ✅ ChatGPT-inspired interface with streaming responses            │
+│  ✅ Document analysis (PDF, TXT, Markdown)                         │
+│  ✅ Message editing and regeneration                               │
+│  ✅ Multiple AI models (Llama, GPT-OSS, DeepSeek, Phi)            │
+│  ✅ Dark/Light theme with OKLCH colors                             │
+│  ✅ GPU acceleration support                                       │
+│  ✅ 100% private - all processing local                            │
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 
@@ -47,12 +46,13 @@
 │  📚 DOCUMENTATION                                                   │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │
-│  📖 INDEX.md             - Documentation navigator                 │
-│  ⚡ QUICKSTART.md        - 5-minute setup guide                    │
+│  📖 START_HERE.md        - New user orientation                    │
+│  ⚡ QUICKSTART.md        - 3-minute setup guide                    │
 │  📘 README.md            - Complete documentation                  │
-│  🏗️  ARCHITECTURE.md     - System design                           │
-│  🔧 TROUBLESHOOTING.md   - Problem solving                         │
-│  🤝 CONTRIBUTING.md      - Contribution guide                      │
+│  🏗️  ARCHITECTURE.md     - System design & architecture            │
+│  🔧 TROUBLESHOOTING.md   - Common issues & solutions               │
+│  🤝 CONTRIBUTING.md      - Contribution guidelines                 │
+│  📝 CHANGELOG.md         - Version history & updates               │
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 
@@ -60,11 +60,11 @@
 │  🛠️  TECH STACK                                                     │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │
-│  Backend:     Python + FastAPI + ChromaDB                          │
-│  Frontend:    React + Vite + Tailwind CSS                          │
-│  LLM:         Ollama (DeepSeek-R1, LLaMA, Phi, Mistral)            │
-│  Embeddings:  sentence-transformers                                │
-│  Database:    ChromaDB (vector database)                           │
+│  Backend:     Python 3.11+ • FastAPI • ChromaDB                    │
+│  Frontend:    React 18 • Vite • Tailwind CSS                       │
+│  LLM:         Ollama (Llama, GPT-OSS, DeepSeek, Phi)               │
+│  Embeddings:  Sentence Transformers (all-MiniLM-L6-v2)             │
+│  Database:    ChromaDB (persistent vector store)                   │
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 

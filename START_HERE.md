@@ -1,10 +1,16 @@
-# 📖 Start Here!
+# Getting Started with CapybaraGPT
 
-Welcome to **CapybaraGPT** - Your private ChatGPT alternative that runs 100% locally on your computer!
+> **A private ChatGPT alternative running 100% locally on your computer.**
 
-💬 **Chat about anything** - Ask questions, get coding help, brainstorm ideas
-📄 **Analyze documents** - Upload PDFs/TXT/MD files and ask questions about them
-🔒 **Complete privacy** - Everything stays on your machine, no cloud, no tracking
+## 🎯 What is CapybaraGPT?
+
+CapybaraGPT is a privacy-focused AI assistant that runs entirely on your local machine. No cloud services, no data collection, no subscriptions.
+
+**Core Capabilities:**
+
+- 💬 **General Conversations** - Ask questions, get coding help, brainstorm ideas
+- 📄 **Document Analysis** - Upload PDFs/TXT/MD and chat with your documents
+- 🔒 **Complete Privacy** - Everything stays on your machine, no external connections
 
 ## 🎯 What You Need to Know
 
@@ -45,14 +51,23 @@ That's it! Start chatting immediately, or click the **+** button to upload docum
 
 ---
 
-## 💡 Quick Tips
+## 💡 Pro Tips
 
-- **Ask anything**: General questions, coding help, creative tasks - no documents needed!
-- **Switch models**: Use the dropdown menu in chat to change AI models
-- **Personalize**: Click Settings (⚙️) to customize AI personality and style
-- **Check your setup**: Run `.\check-env.ps1`
-- **Try different models**: See https://ollama.com/search
-- **Having issues?** Check [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
+| Feature            | How to Use                          |
+| ------------------ | ----------------------------------- |
+| **Switch Models**  | Dropdown menu next to send button   |
+| **Personalize AI** | Click Settings (⚙️) in sidebar      |
+| **Speed Up**       | Use smaller models like `phi3:mini` |
+| **Dark Mode**      | Toggle in settings panel            |
+| **Export Chats**   | Rename and organize in sidebar      |
+
+**Performance Tuning:** Check `backend/ollama_client.py` for detailed comments on all tunable parameters.
+
+**Need Help?**
+
+- 🔍 Environment check: `.\check-env.ps1`
+- 📚 Browse models: [ollama.com/library](https://ollama.com/library)
+- 🐛 Issues? [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
 
 ---
 
