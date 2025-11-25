@@ -1,6 +1,6 @@
 # 🤝 Contributing Guide
 
-Want to improve the RAG Chatbot? Here's how to get started!
+Want to improve the CapybaraGPT? Here's how to get started!
 
 ## 🚀 Quick Contribution Guide
 
@@ -52,14 +52,14 @@ git push origin your-branch-name
 
 #### Frontend Improvements
 
-- [ ] Add dark mode toggle
-- [ ] Add copy-to-clipboard for messages
 - [ ] Add message timestamps
 - [ ] Add typing indicators
-- [ ] Improve error messages
 - [ ] Add loading skeletons
 - [ ] Add keyboard shortcuts (Ctrl+K, etc.)
-- [ ] Add message markdown rendering
+- [ ] Add export chat to markdown/PDF
+- [ ] Add message search functionality
+- [ ] Add voice input support
+- [ ] Improve mobile responsiveness
 
 #### Backend Improvements
 
@@ -82,17 +82,11 @@ git push origin your-branch-name
 
 #### Features
 
-- [ ] **Streaming Responses**: Real-time token streaming
+- [ ] **Chat Organization**: Folders and tags for chats
 
-  - Update `ollama_client.py` to support streaming
-  - Modify `Chat.jsx` to handle SSE events
-  - Update `/ask` endpoint for EventSource
-
-- [ ] **Chat History**: Save/load conversations
-
-  - Add SQLite database
-  - Create history API endpoints
-  - Add history UI in frontend
+  - Add folder/tag system in localStorage
+  - Create UI for organizing chats
+  - Add search and filter options
 
 - [ ] **Multi-document Chat**: Chat with specific documents
 
@@ -261,11 +255,17 @@ Before submitting:
 
 Found a bug? Open an issue with:
 
-1. **Title**: Short description
+1. **Title**: Short, descriptive title (e.g., "AI stops responding after 30 seconds")
 2. **Description**: What happened vs. what you expected
-3. **Steps to Reproduce**: How to trigger the bug
-4. **Environment**: OS, Python version, Node version
-5. **Logs**: Relevant error messages
+3. **Steps to Reproduce**: Clear steps to trigger the bug
+4. **Environment**:
+   - OS (Windows/Mac/Linux)
+   - Python version (`python --version`)
+   - Node version (`node --version`)
+   - Ollama version (`ollama --version`)
+   - Model being used
+5. **Logs**: Copy relevant error messages from terminal/console
+6. **Screenshots**: If UI-related, attach screenshots
 
 ## 💬 Feature Requests
 
@@ -280,11 +280,14 @@ Want a new feature?
 
 For design changes:
 
-1. Keep the current aesthetic (clean, minimal)
-2. Ensure mobile responsiveness
-3. Test on multiple browsers
-4. Consider accessibility (WCAG guidelines)
-5. Use Tailwind CSS utilities when possible
+1. **Design Philosophy**: Keep it clean, minimal, and modern (ChatGPT-inspired)
+2. **Color System**: Use OKLCH color space variables (see `frontend/src/index.css`)
+3. **Responsive Design**: Test on mobile (375px), tablet (768px), and desktop (1920px)
+4. **Browser Testing**: Test on Chrome, Firefox, Safari, Edge
+5. **Accessibility**: Follow WCAG 2.1 Level AA guidelines
+6. **Tailwind CSS**: Use utility classes and custom theme variables
+7. **Dark Mode**: Ensure all changes work in both light and dark themes
+8. **Icons**: Use consistent icon style (currently using heroicons-style SVGs)
 
 ## 🔧 Common Development Tasks
 
@@ -292,9 +295,18 @@ For design changes:
 
 ```python
 # backend/app.py
+from fastapi import APIRouter
+
 @app.get("/new-endpoint")
-def new_endpoint():
-    return {"message": "Hello!"}
+async def new_endpoint():
+    """
+    Endpoint description for auto-generated docs.
+    """
+    try:
+        # Your logic here
+        return {"message": "Success!", "data": {}}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 ```
 
 ### Add a New Component
@@ -333,11 +345,14 @@ npm install package-name
 
 We especially welcome contributions in:
 
-1. **Performance**: Make it faster!
-2. **User Experience**: Make it better!
-3. **Documentation**: Make it clearer!
-4. **Testing**: Make it more reliable!
-5. **Accessibility**: Make it available to everyone!
+1. **Performance**: Optimize response times and resource usage
+2. **User Experience**: Enhance UI/UX with modern features
+3. **Documentation**: Add tutorials, guides, and examples
+4. **Testing**: Add unit tests and integration tests
+5. **Accessibility**: WCAG compliance and screen reader support
+6. **Mobile Support**: Improve responsive design and touch interactions
+7. **Export Features**: Save chats, export to different formats
+8. **Advanced RAG**: Better document chunking and retrieval
 
 ## 🌟 Recognition
 
@@ -349,18 +364,56 @@ Contributors will be:
 
 ## 📚 Resources
 
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [React Documentation](https://react.dev/)
-- [Tailwind CSS](https://tailwindcss.com/docs)
-- [ChromaDB Docs](https://docs.trychroma.com/)
-- [Ollama Documentation](https://ollama.com/docs)
+### Documentation
+
+- [FastAPI Documentation](https://fastapi.tiangolo.com/) - Backend framework
+- [React Documentation](https://react.dev/) - Frontend framework
+- [Tailwind CSS](https://tailwindcss.com/docs) - Styling
+- [Vite Documentation](https://vitejs.dev/) - Build tool
+
+### AI/ML Stack
+
+- [Ollama Documentation](https://ollama.com/docs) - LLM runtime
+- [Ollama Model Library](https://ollama.com/library) - Available models
+- [ChromaDB Docs](https://docs.trychroma.com/) - Vector database
+- [Sentence Transformers](https://www.sbert.net/) - Embeddings
+
+### Best Practices
+
+- [RAG Best Practices](https://www.llamaindex.ai/blog/a-guide-to-retrieval-augmented-generation-rag) - RAG patterns
+- [React Best Practices](https://react.dev/learn/thinking-in-react) - Component design
+- [FastAPI Best Practices](https://github.com/zhanymkanov/fastapi-best-practices) - API design
+
+## 🚀 Recent Updates
+
+**Latest Features Implemented:**
+
+- ✅ Dark/Light theme with OKLCH color system
+- ✅ ChatGPT-style collapsible sidebar with icons
+- ✅ Message editing and regeneration
+- ✅ Stop generation button
+- ✅ Copy to clipboard for all messages
+- ✅ Code block syntax highlighting with copy button
+- ✅ Model selector dropdown
+- ✅ Memory toggle (temporary vs saved chats)
+- ✅ GPU acceleration support
+- ✅ Performance tuning options (documented in code)
+- ✅ Streaming responses
+- ✅ Chat history management
+
+**Performance Notes:**
+
+- All performance tuning options are documented in `backend/ollama_client.py` and `backend/rag.py`
+- Look for 🎯 and ⚡ emoji comments in the code for customization points
 
 ## ❓ Questions?
 
-- Check existing issues
-- Read the documentation
-- Ask in discussions (if available)
+- Check [README.md](../README.md) for setup and usage
+- Check [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues
+- Check [ARCHITECTURE.md](ARCHITECTURE.md) to understand the codebase
+- Read existing issues before opening new ones
+- Open a discussion for feature ideas
 
 ---
 
-**Thank you for contributing! Every improvement helps!** 🙏
+**Thank you for contributing! Every improvement helps make this project better!** 🙏
