@@ -53,13 +53,13 @@ git push origin your-branch-name
 - [ ] **Select documents** - Choose which files AI reads
 - [ ] **Better text splitting** - Smart document chunking
 - [ ] **Multiple file upload** - Upload many files at once
+- [ ] **Stream AI Response** - Stream response block for block
 
 ### Advanced
 
 - [ ] **Hybrid search** - Keyword + semantic search
 - [ ] **Multi-user** - Login system, separate data per user
 - [ ] **Better RAG** - Re-ranking, query expansion
-- [ ] **Model switcher** - Change AI model in UI
 - [ ] **Redis cache** - Speed up common queries
 - [ ] **Monitoring** - Track performance and errors
 
