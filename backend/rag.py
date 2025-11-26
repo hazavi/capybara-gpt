@@ -139,8 +139,7 @@ def ask_rag(question: str, stream: bool = False, history: list = None, personali
     if conversation_context or context or personalization:
         system_parts = [
             # 🎯 Default AI personality - Edit this to change behavior!
-            "You are a helpful AI assistant. Provide complete, well-structured answers.",
-            "Always finish your thoughts completely - do not cut off mid-sentence."
+            "You are a helpful AI assistant. Provide short but well-structured answers."
             # Examples to try:
             # "You are a coding expert. Provide concise, practical solutions."
             # "You are a friendly tutor. Explain concepts clearly with examples."
@@ -155,7 +154,7 @@ def ask_rag(question: str, stream: bool = False, history: list = None, personali
         system_prompt = "\n\n".join(system_parts)
     else:
         # 🎯 Default system prompt when no context - Edit to change default behavior!
-        system_prompt = "You are a helpful AI assistant. Provide complete, well-structured answers. Always finish your thoughts completely - do not cut off mid-sentence."
+        system_prompt = "You are a helpful AI assistant. Provide short but well-structured answers."
     
     # Build the current question prompt
     prompt = f"{question}"

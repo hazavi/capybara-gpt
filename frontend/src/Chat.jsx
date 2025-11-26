@@ -56,7 +56,7 @@ function Chat({ theme, currentChat, currentChatId, onMessagesUpdate, onUploadSuc
     if (currentChatId && saveToMemory && messages.length > 0) {
       onMessagesUpdate(currentChatId, messages)
     }
-  }, [messages, currentChatId, saveToMemory])
+  }, [messages, currentChatId, saveToMemory, onMessagesUpdate])
 
   // Fetch available models on mount
   useEffect(() => {
