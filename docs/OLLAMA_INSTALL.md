@@ -1,49 +1,49 @@
-# 📥 Ollama Installation Guide
+# Ollama Installation Guide
 
 ## What is Ollama?
 
-Ollama is a tool that lets you run large language models (LLMs) locally on your computer. It's required for this RAG Chatbot to work.
+Ollama lets you run AI models on your computer. CapybaraGPT needs it to work.
 
 ## Windows Installation
 
-### Method 1: Official Installer (Recommended)
+### Official Installer (Recommended)
 
-1. **Download Ollama**
+**Step 1: Download**
 
-   - Go to: https://ollama.com/download/windows
-   - Click the "Download for Windows" button
-   - The installer will download (OllamaSetup.exe, ~200MB)
+- Go to https://ollama.com/download/windows
+- Click "Download for Windows"
+- File size: ~200MB
 
-2. **Run the Installer**
+**Step 2: Install**
 
-   - Double-click `OllamaSetup.exe`
-   - Follow the installation wizard
-   - It will install to `C:\Users\YourName\AppData\Local\Programs\Ollama`
+- Run `OllamaSetup.exe`
+- Follow the installer steps
 
-3. **Verify Installation**
+**Step 3: Verify**
 
-   ```powershell
-   # Close and reopen PowerShell/Terminal
-   ollama --version
-   ```
+```powershell
+# Close and reopen PowerShell, then:
+ollama --version
+```
 
-   You should see something like: `ollama version is 0.x.x`
+You should see: `ollama version is 0.x.x`
 
-4. **Start Ollama Service**
+**Step 4: Start Ollama**
 
-   ```powershell
-   ollama serve
-   ```
+```powershell
+ollama serve
+```
 
-   Keep this terminal window open! Ollama needs to run in the background.
+Keep this terminal open! Ollama must run in the background.
 
-5. **Pull DeepSeek-R1 Model** (in a new terminal)
+**Step 5: Download AI Model** (open new terminal)
 
-   ```powershell
-   ollama pull deepseek-r1
-   ```
+```powershell
+# Default model (14GB download)
+ollama pull gpt-oss:20b
+```
 
-   This will download ~4-8GB depending on the model size. First time only!
+This downloads the AI model. Takes a while on first run!
 
 ### Method 2: Winget (Command Line)
 
@@ -116,32 +116,32 @@ Keep this terminal open! Or run it in the background.
 **macOS:**
 Ollama runs automatically after installation.
 
-### 2. Pull a Model
+### 2. Download an AI Model
 
-In a **new terminal window**:
+Open a new terminal:
 
 ```bash
-# Recommended model (reasoning capabilities)
-ollama pull deepseek-r1
+# Default model (what CapybaraGPT uses)
+ollama pull gpt-oss:20b
 
 # Alternative models:
-ollama pull llama3:8b       # 4.7GB - balanced
-ollama pull phi3:mini       # 2.3GB - fast & lightweight
-ollama pull mistral         # 4.1GB - good alternative
+ollama pull llama3.1:8b     # 4.7GB - fast, good quality
+ollama pull phi3:mini       # 2.3GB - very fast, basic
+ollama pull deepseek-r1     # 8GB - advanced reasoning
 ```
 
-**Note:** First pull will download several GB. Be patient!
+**Note:** First download takes time (2GB-20GB depending on model).
 
-### 3. Verify Everything Works
+### 3. Test It Works
 
 ```bash
-# List installed models
+# See what models you have
 ollama list
 
 # Test the model
-ollama run deepseek-r1 "Hello, how are you?"
+ollama run gpt-oss:20b "Hello, how are you?"
 
-# Check API endpoint
+# Check if Ollama is responding
 curl http://localhost:11434/api/tags
 ```
 
@@ -214,35 +214,16 @@ ollama pull phi3:mini
 # MODEL_NAME = "phi3:mini"
 ```
 
-## Model Recommendations
+## Model Guide
 
-### DeepSeek-R1 (Default)
+| Model                     | Size  | Speed     | Quality   | Best For             | RAM Needed |
+| ------------------------- | ----- | --------- | --------- | -------------------- | ---------- |
+| **gpt-oss:20b** (default) | 14GB  | Medium    | Excellent | Production, accuracy | 16GB+      |
+| **llama3.1:8b**           | 4.7GB | Fast      | Great     | Daily use, balanced  | 8GB+       |
+| **phi3:mini**             | 2.3GB | Very Fast | Good      | Quick tasks, old PCs | 4GB+       |
+| **deepseek-r1**           | 8GB   | Medium    | Excellent | Math, reasoning      | 16GB+      |
 
-- **Size**: ~8GB
-- **Best for**: Advanced reasoning, complex questions
-- **Speed**: Moderate
-- **RAM needed**: 16GB+ recommended
-
-### LLaMA 3:8B
-
-- **Size**: ~4.7GB
-- **Best for**: General purpose, good balance
-- **Speed**: Fast
-- **RAM needed**: 8GB+
-
-### Phi-3 Mini
-
-- **Size**: ~2.3GB
-- **Best for**: Quick responses, lower-end hardware
-- **Speed**: Very fast
-- **RAM needed**: 4GB+
-
-### Mistral
-
-- **Size**: ~4.1GB
-- **Best for**: Creative writing, variety
-- **Speed**: Fast
-- **RAM needed**: 8GB+
+**To change models:** Edit `backend/ollama_client.py` and change `MODEL_NAME`
 
 ## Hardware Requirements
 
@@ -298,12 +279,23 @@ sudo systemctl status ollama
 
 After installing Ollama:
 
-1. ✅ Verify: `ollama --version`
-2. ✅ Start service: `ollama serve`
-3. ✅ Pull model: `ollama pull deepseek-r1`
-4. ✅ Test: `ollama run deepseek-r1 "Hello"`
-5. ✅ Return to project: `.\check-env.ps1`
-6. ✅ Start chatbot: `.\start.ps1`
+```powershell
+# 1. Verify installation
+ollama --version
+
+# 2. Start Ollama (keep running)
+ollama serve
+
+# 3. Download model (new terminal)
+ollama pull gpt-oss:20b
+
+# 4. Test it
+ollama run gpt-oss:20b "Hello"
+
+# 5. Return to CapybaraGPT
+.\check-env.ps1
+.\start.ps1
+```
 
 ## Useful Commands
 

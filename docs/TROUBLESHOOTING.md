@@ -1,38 +1,38 @@
-# 🔧 Troubleshooting Guide
+# Troubleshooting Guide
 
-Common issues and their solutions for the RAG Chatbot.
+Common problems and how to fix them.
 
-## 🚨 Ollama Issues
+## Ollama Problems
 
-### Error: "Cannot connect to Ollama"
+### "Cannot connect to Ollama"
 
-**Cause**: Ollama service is not running
+**Why this happens:** Ollama isn't running
 
-**Solutions**:
+**Fix:**
 
 ```bash
-# 1. Start Ollama
+# Start Ollama
 ollama serve
 
-# 2. Check if Ollama is running
+# Check if it's working
 curl http://localhost:11434/api/tags
 
-# 3. Verify model is installed
+# See what models you have
 ollama list
 ```
 
-### Error: "Model not found"
+### "Model not found"
 
-**Cause**: The specified model hasn't been pulled
+**Why this happens:** The AI model isn't downloaded
 
-**Solution**:
+**Fix:**
 
 ```bash
-# Pull the model specified in backend/ollama_client.py
-ollama pull llama3.1
+# Download the default model
+ollama pull gpt-oss:20b
 
-# Or use a different model
-ollama pull llama3:8b
+# Or download a different model
+ollama pull llama3.1:8b
 ollama pull phi3:mini
 ```
 
@@ -44,24 +44,22 @@ ollama pull phi3:mini
 OLLAMA_URL = "http://localhost:YOUR_PORT/api/generate"
 ```
 
-## 🐍 Backend Issues
+## Backend Problems
 
-### Error: "Module not found"
+### "Module not found"
 
-**Cause**: Python dependencies not installed
+**Why this happens:** Python packages aren't installed
 
-**Solution**:
+**Fix:**
 
 ```bash
 cd backend
 pip install -r requirements.txt
 ```
 
-### Error: "Port 8000 already in use"
+### "Port 8000 already in use"
 
-**Solutions**:
-
-**Option 1** - Kill the process:
+**Fix Option 1 - Stop the other program:**
 
 ```powershell
 # Windows
@@ -71,22 +69,24 @@ Get-Process -Id (Get-NetTCPConnection -LocalPort 8000).OwningProcess | Stop-Proc
 kill -9 $(lsof -ti:8000)
 ```
 
-**Option 2** - Change the port in `backend/app.py`:
+**Fix Option 2 - Use a different port:**
+Edit `backend/app.py` and change:
 
 ```python
-uvicorn.run(app, host="0.0.0.0", port=8001)  # Use different port
+uvicorn.run(app, host="0.0.0.0", port=8001)
 ```
 
-### Error: "ChromaDB errors"
+### "ChromaDB errors"
 
-**Cause**: Corrupted embeddings database
+**Why this happens:** Database files are corrupted
 
-**Solution**:
+**Fix:**
 
 ```powershell
-# Delete and recreate embeddings
+# Delete the database (your documents are safe in data/ folder)
 Remove-Item -Recurse -Force embeddings
-# Restart backend - will create fresh database
+
+# Restart backend - it will rebuild the database
 ```
 
 ### Error: "Document upload fails"
@@ -98,35 +98,33 @@ Remove-Item -Recurse -Force embeddings
 3. File size is reasonable (< 50MB)
 4. Backend has write permissions to `data/` folder
 
-## ⚛️ Frontend Issues
+## Frontend Problems
 
-### Error: "Cannot GET /ask"
+### "Cannot GET /ask"
 
-**Cause**: Backend is not running or proxy not configured
+**Why this happens:** Backend isn't running
 
-**Solutions**:
+**Fix:**
 
-1. Verify backend is running on port 8000
-2. Check `frontend/vite.config.js` proxy settings
-3. Try accessing backend directly: http://localhost:8000
+1. Make sure backend is running on port 8000
+2. Check `frontend/vite.config.js` has correct proxy settings
+3. Try visiting http://localhost:8000 directly
 
-### Error: "npm install fails"
+### "npm install fails"
 
-**Solutions**:
+**Fix:**
 
 ```bash
-# Clear cache and reinstall
+# Clear everything and start fresh
 cd frontend
 rm -rf node_modules package-lock.json
 npm cache clean --force
 npm install
 ```
 
-### Error: "Port 3000 already in use"
+### "Port 3000 already in use"
 
-**Solutions**:
-
-**Option 1** - Kill the process:
+**Fix Option 1 - Stop the other program:**
 
 ```powershell
 # Windows
@@ -136,12 +134,12 @@ Get-Process -Id (Get-NetTCPConnection -LocalPort 3000).OwningProcess | Stop-Proc
 kill -9 $(lsof -ti:3000)
 ```
 
-**Option 2** - Use different port:
+**Fix Option 2 - Use a different port:**
 Edit `frontend/vite.config.js`:
 
 ```javascript
 server: {
-  port: 3001,  // Use different port
+  port: 3001,
 }
 ```
 

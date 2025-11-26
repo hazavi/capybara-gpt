@@ -1,104 +1,73 @@
-# 🎯 Project Transformation Complete!
+# Project Summary
 
-Your project has been successfully transformed into a **full-stack RAG Chatbot** with local LLM support!
+CapybaraGPT is a complete AI assistant that runs on your computer.
 
-## 📦 What Was Created
+## What's Included
 
-### Backend (FastAPI + Python)
+### Backend (Python + FastAPI)
 
-✅ 6 files created in `backend/` directory:
+- `app.py` - Main API server
+- `rag.py` - Document search system
+- `ollama_client.py` - AI model connection
+- `docs_loader.py` - Document processing
+- `requirements.txt` - Python packages
+- `Dockerfile` - Container setup
 
-- `app.py` - FastAPI server with REST API
-- `rag.py` - RAG logic with ChromaDB
-- `ollama_client.py` - Ollama HTTP client
-- `docs_loader.py` - Document processing & chunking
-- `requirements.txt` - Python dependencies
-- `Dockerfile` - Container configuration
+### Frontend (React)
 
-### Frontend (React + Vite)
-
-✅ 11 files created in `frontend/` directory:
-
-- `src/App.jsx` - Main application component
-- `src/Chat.jsx` - Chat interface component
-- `src/Upload.jsx` - Document upload component
-- `src/main.jsx` - React entry point
-- `src/index.css` - Tailwind CSS styles
+- `src/App.jsx` - Main application
+- `src/Chat.jsx` - Chat interface
+- `src/Upload.jsx` - File upload
+- `src/main.jsx` - App entry point
+- `src/index.css` - Styling
 - `package.json` - Dependencies
-- `vite.config.js` - Build configuration
-- `tailwind.config.js` - Tailwind config
-- `postcss.config.js` - PostCSS config
-- `index.html` - HTML template
-- `Dockerfile` - Container configuration
+- `vite.config.js` - Build setup
+- `index.html` - Web page
 
-### Documentation & Scripts
+### Scripts & Docs
 
-✅ 7 additional files:
+- `README.md` - Main guide
+- `QUICKSTART.md` - Fast setup
+- `start.ps1` - Windows startup
+- `start.sh` - Linux/Mac startup
+- `check-env.ps1` - System check
+- `docker-compose.yml` - Docker setup
 
-- `README.md` - Comprehensive documentation
-- `QUICKSTART.md` - 5-minute setup guide
-- `CHANGELOG.md` - Version history
-- `start.ps1` - Windows startup script
-- `start.sh` - Linux/Mac startup script
-- `check-env.ps1` - Environment checker
-- `docker-compose.yml` - Docker orchestration
-
-### Data & Configuration
-
-✅ Supporting files:
-
-- `.gitignore` - Git ignore rules
-- `data/sample-rag-intro.md` - Sample document
-- `data/.gitkeep` - Directory placeholder
-
-## 🚀 Next Steps
-
-### 1. Install Ollama
-
-```bash
-# Download from https://ollama.com
-# Then pull a model:
-ollama pull deepseek-r1
-```
-
-### 2. Run the Environment Check
+## Getting Started
 
 ```powershell
+# 1. Install Ollama from https://ollama.com
+ollama pull gpt-oss:20b
+
+# 2. Check your system
 .\check-env.ps1
-```
 
-### 3. Start the Application
-
-```powershell
-# Windows
+# 3. Start the app
 .\start.ps1
 
-# Linux/Mac
-chmod +x start.sh
-./start.sh
+# 4. Open in browser
+http://localhost:3000
 ```
 
-### 4. Open the App
+## Features
 
-Navigate to: **http://localhost:3000**
+- Chat interface with AI
+- Upload and search documents (PDF, TXT, Markdown)
+- Everything runs locally
+- API available at http://localhost:8000/docs
+- Works on Windows, Linux, and Mac
+- Docker support included
 
-## 🎨 Features Available
+## Technical Details
 
-- ✅ **Chat Interface** - ChatGPT-style UI with message history
-- ✅ **Document Upload** - Drag & drop PDF, TXT, MD files
-- ✅ **Knowledge Base** - View uploaded documents and stats
-- ✅ **Local Processing** - Everything runs on your machine
-- ✅ **REST API** - Full API documentation at `/docs`
-- ✅ **Docker Ready** - Can be containerized with one command
-- ✅ **Cross-Platform** - Works on Windows, Linux, and Mac
+**Languages:** Python, JavaScript, CSS  
+**Frontend:** React + Tailwind CSS  
+**Backend:** FastAPI + Python  
+**Database:** ChromaDB (vector search)  
+**AI Model:** gpt-oss:20b (default)  
+**Total Files:** 24+  
+**Lines of Code:** ~2,500+
 
-## 📊 Project Statistics
-
-- **Total Files Created**: 24
-- **Lines of Code**: ~2,500+
-- **Languages**: Python, JavaScript, JSX, CSS, Markdown
-- **Frameworks**: FastAPI, React, Tailwind CSS
-- **Databases**: ChromaDB (vector database)
 - **LLM Support**: Ollama (LLaMA, Phi, Mistral, etc.)
 
 ## 🔗 Quick Links

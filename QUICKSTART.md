@@ -1,95 +1,77 @@
-# 🚀 Quick Start Guide
+# Quick Start Guide
 
-**Get CapybaraGPT running in 3 minutes.**
-
----
-
-## Prerequisites
-
-✅ Python 3.11+ installed  
-✅ Node.js 18+ installed  
-✅ 8GB+ RAM recommended
+Get running in 3 minutes.
 
 ---
 
-## Installation Steps
+## What You Need
 
-### 1️⃣ Install Ollama
+- Python 3.11 or newer
+- Node.js 18 or newer
+- 8GB memory (RAM)
 
-Download from **[ollama.com](https://ollama.com)**
+---
+
+## Setup Steps
+
+### 1. Install Ollama
+
+Download from [ollama.com](https://ollama.com), then:
 
 ```bash
 ollama pull llama3.1
 ollama serve
 ```
 
-> 💡 Keep this terminal open
+Keep this terminal open.
 
-### 2️⃣ Start Application
+### 2. Start Application
+
+New terminal:
 
 ```powershell
 .\start.ps1
 ```
 
-> Automatically installs dependencies and starts both servers
+Wait for "Server started" messages.
 
-### 3️⃣ Open Browser
+### 3. Open Browser
 
-Navigate to **http://localhost:3000**
+**http://localhost:3000**
 
-### 4️⃣ Start Chatting!
-
-> ⏱️ **Note**: AI responses take seconds or minutes depending on your computer's speed and model size. Smaller models like `phi3:mini` are faster but less capable.
-
-**Ask anything immediately:**
-
-- "Explain quantum computing in simple terms"
-- "Write a Python function to reverse a string"
-- "What are the benefits of meditation?"
-
-**Or analyze documents:**
-
-1. Click the **+** button next to the message input
-2. Upload a PDF/TXT/MD file
-3. Wait for "Document uploaded successfully"
-4. Ask questions about your document!
+Done! Start chatting or click **+** to upload documents.
 
 ---
 
----
+## Troubleshooting
 
-## 🔧 Troubleshooting
-
-### Common Issues
-
-| Problem               | Solution                     |
-| --------------------- | ---------------------------- |
-| Ollama not responding | Run `ollama serve` first     |
-| Port conflict         | Check with `.\check-env.ps1` |
-| Model not found       | Run `ollama list` to verify  |
-
-### Verify Installation
+**Ollama not responding?**
 
 ```bash
-ollama list          # Check installed models
-ollama ps            # Check running models
-.\check-env.ps1      # Verify environment
+ollama serve
+```
+
+**Port conflict?**
+
+```powershell
+.\check-env.ps1
+```
+
+**Model issues?**
+
+```bash
+ollama list
 ```
 
 ---
 
-## 🎯 Next Steps
+## What's Next?
 
-### Explore Features
+See [README.md](README.md) for:
 
-- 🎨 **Customize AI** → Click Settings (⚙️) in sidebar
-- 🤖 **Change Model** → Use dropdown next to send button
-- 💬 **Manage Chats** → Rename/delete in sidebar
-- 🌓 **Toggle Theme** → Dark/light mode in settings
+- All features and capabilities
+- Model selection guide
+- Performance tuning
+- Document mode instructions
 
-### Learn More
-
-- 📚 **Full Documentation** → [README.md](README.md)
-- 🏗️ **Architecture** → [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-- 🤝 **Contributing** → [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)
-- 🐛 **Issues?** → [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
+See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for detailed help.

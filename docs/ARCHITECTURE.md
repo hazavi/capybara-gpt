@@ -58,10 +58,10 @@
 │  embeddings/   │  │           ▼            │
 │  directory     │  │ ┌────────────────────┐ │
 └────────────────┘  │ │  Local LLM Models  │ │
-                    │ │  • deepseek-r1     │ │
+                    │ │  • gpt-oss:20b     │ │
                     │ │  • llama3:8b       │ │
+                    │ │  • deepseek-r1     │ │
                     │ │  • phi3:mini       │ │
-                    │ │  • mistral         │ │
                     │ └────────────────────┘ │
                     └────────────────────────┘
 ```
@@ -134,7 +134,7 @@ User → Chat.jsx → POST /ask → rag.py
 ## File Structure
 
 ```
-capybara-v2/
+capybara-gpt/
 │
 ├── 📁 backend/              # FastAPI Backend
 │   ├── app.py              # Main API server
@@ -159,15 +159,21 @@ capybara-v2/
 ├── 📁 data/                 # Document storage
 │   └── sample-rag-intro.md # Sample document
 │
+├── 📁 docs/                 # Documentation
+│   ├── INDEX.md            # Documentation index
+│   ├── ARCHITECTURE.md     # This file
+│   ├── OLLAMA_INSTALL.md   # Ollama setup guide
+│   ├── TROUBLESHOOTING.md  # Problem solving
+│   ├── PROJECT_SUMMARY.md  # Project overview
+│   ├── CONTRIBUTING.md     # Contribution guide
+│   └── CHANGELOG.md        # Version history
+│
 ├── 📁 embeddings/           # ChromaDB storage
 │   └── (generated files)
 │
 ├── 📄 README.md            # Main documentation
-├── 📄 QUICKSTART.md        # Quick setup guide
-├── 📄 TROUBLESHOOTING.md   # Problem solving
-├── 📄 ARCHITECTURE.md      # This file
-├── 📄 PROJECT_SUMMARY.md   # Project overview
-├── 📄 CHANGELOG.md         # Version history
+├── 📄 START_HERE.md        # Quick orientation
+├── 📄 QUICKSTART.md        # Fast setup guide
 │
 ├── 🔧 start.ps1            # Windows startup
 ├── 🔧 start.sh             # Linux/Mac startup

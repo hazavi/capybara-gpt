@@ -1,449 +1,532 @@
+<div align="center">
+
+# CapybaraGPT
+
+### Your Private AI Assistant That Runs Completely On Your Computer
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Node 18+](https://img.shields.io/badge/node-18+-green.svg)](https://nodejs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-18+-61DAFB.svg)](https://react.dev/)
 
-# CapybaraGPT
+[Quick Start](#quick-start) • [Features](#what-can-it-do) • [How It Works](#how-it-works) • [Documentation](#documentation)
 
-**Privacy-first AI assistant with RAG capabilities - Fully local, fully open source.**
-
-**Key Differentiators:**
-
-- ✅ Zero external dependencies after installation
-- ✅ Enterprise-grade privacy and security
-- ✅ Extensible architecture with REST API
-- ✅ Production-optimized with GPU acceleration
+</div>
 
 ---
 
-## ⚡ Quick Start
+## Why Choose CapybaraGPT?
 
-### Prerequisites
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Traditional Cloud AI          CapybaraGPT (Local AI)       │
+├─────────────────────────────────────────────────────────────┤
+│  Your data sent to servers  →  Everything stays on your PC  │
+│  Monthly subscription fees  →  Free and open source         │
+│  Internet required          →  Works offline                │
+│  Privacy concerns           →  Complete data control        │
+│  Rate limits                →  Unlimited usage              │
+└─────────────────────────────────────────────────────────────┘
+```
 
-Ensure the following are installed on your system:
+**Key Benefits:**
 
-- Python 3.11 or higher
-- Node.js 18 or higher
-- Ollama runtime
+- **Complete Privacy** - Your conversations and documents never leave your computer
+- **No Costs** - No monthly fees or usage limits
+- **Full Control** - Choose your AI model and customize behavior
+- **Works Offline** - No internet needed after setup
+- **Fast Performance** - Uses your GPU for quick responses
 
-### Installation
+---
 
-**1. Install and Configure Ollama**
+## Quick Start
+
+### What You Need
+
+Before starting, install these three programs:
+
+| Program     | Version        | What It Does             |
+| ----------- | -------------- | ------------------------ |
+| **Python**  | 3.11 or higher | Runs the backend server  |
+| **Node.js** | 18 or higher   | Builds the web interface |
+| **Ollama**  | Latest version | Runs the AI models       |
+
+### Setup Steps
+
+**Step 1: Install Ollama and Download an AI Model**
 
 ```bash
-# Install Ollama from https://ollama.com
-# Pull your preferred model
+# Download Ollama from https://ollama.com and install it
+
+# Download an AI model (this example uses Llama 3.1)
 ollama pull llama3.1
 
-# Start Ollama server
+# Start Ollama
 ollama serve
 ```
 
-**2. Launch Application**
+Need help? See our [detailed Ollama guide](docs/OLLAMA_INSTALL.md).
+
+**Step 2: Start CapybaraGPT**
 
 ```powershell
-# Windows
+# On Windows, run:
 .\start.ps1
 
-# Linux/macOS
+# On Linux/macOS, run:
 ./start.sh
 ```
 
-**3. Access Interface**
+This script automatically sets up everything you need.
 
-- **Web UI:** http://localhost:3000
-- **API Docs:** http://localhost:8000/docs
-- **API Server:** http://localhost:8000
+**Step 3: Open Your Browser**
+
+```
+Main Interface:  http://localhost:3000
+API Docs:        http://localhost:8000/docs
+```
+
+That's it! You're ready to start chatting.
 
 ---
 
-## ⚙️ Performance Considerations
+## Making It Faster
 
-### Inference Latency
+### What Affects Speed?
 
-Response times vary based on multiple factors:
+| Factor              | Impact                            | How to Fix                                |
+| ------------------- | --------------------------------- | ----------------------------------------- |
+| **Your Hardware**   | Better CPU/GPU = faster responses | Use GPU if you have one (`num_gpu: -1`)   |
+| **AI Model Size**   | Bigger models = slower            | Use smaller models like `phi3:mini`       |
+| **Memory Settings** | More context = slower             | Lower `num_ctx` to 1024                   |
+| **Document Search** | More documents = slower           | Use fewer search results (`n_results: 1`) |
 
-| Factor             | Impact                         | Optimization                             |
-| ------------------ | ------------------------------ | ---------------------------------------- |
-| **Hardware**       | CPU/GPU compute capacity       | Enable GPU layers (`num_gpu: -1`)        |
-| **Model Size**     | Parameters count affects speed | Use quantized models (e.g., `phi3:mini`) |
-| **Context Length** | Token count in conversation    | Reduce `num_ctx` to 1024-2048            |
-| **RAG Retrieval**  | Document search overhead       | Limit `n_results` to 1-2 chunks          |
+### Quick Speed Settings
 
-### Performance Tuning
+All settings have helpful comments in the code:
 
-All configuration parameters are documented inline:
+- Speed settings: `backend/ollama_client.py` (look for 🎯)
+- Document settings: `backend/rag.py` (look for ⚡)
 
-- **Backend Configuration:** `backend/ollama_client.py` (🎯 marked sections)
-- **RAG Optimization:** `backend/rag.py` (⚡ marked sections)
-
-**Recommended Settings for Speed:**
+**Example Speed Configuration:**
 
 ```python
-num_ctx: 1024          # Reduce context window
-num_predict: 1024      # Limit output tokens
-num_thread: 16         # Increase CPU threads
-num_gpu: -1            # Maximize GPU usage
+# In backend/ollama_client.py
+num_ctx: 1024          # Less memory = faster
+num_predict: 1024      # Shorter responses = faster
+num_thread: 16         # More threads = faster (if your CPU supports it)
+num_gpu: -1            # Use GPU = much faster
+
+# In backend/rag.py
+n_results: 1           # Search fewer documents = faster
+doc_truncated: 300     # Shorter chunks = faster
 ```
+
+**Pro Tip:** Small models (3B-8B size) work great for most tasks and run much faster.
 
 ---
 
-## 🎯 Core Capabilities
+## What Can It Do?
 
-### Conversational AI
+### Chat and Get Answers
 
-**General Purpose Interaction**
+Talk to the AI like ChatGPT, but everything stays on your computer:
 
-- Natural language understanding across domains (STEM, humanities, creative writing)
-- Multi-turn conversations with context awareness
-- Code generation and technical problem-solving
-- Real-time streaming responses with interruption support
+- Ask questions about any topic
+- Get help writing code in 30+ languages
+- Have back-and-forth conversations (it remembers context)
+- Customize how the AI talks (formal, casual, brief, detailed)
 
-### Document Intelligence (RAG)
+### Ask Questions About Your Documents
 
-**Retrieval Augmented Generation**
-
-- Multi-format document processing (PDF, TXT, Markdown)
-- Semantic search with ChromaDB vector database
-- Context-aware question answering with source attribution
-- Automatic text chunking with configurable overlap
-- Persistent embedding storage
-
-### Developer Tools
-
-**Code Assistance**
-
-- Multi-language code generation and explanation
-- Syntax error detection and debugging
-- Code review with best practices suggestions
-- Algorithm design and optimization
-
-### Enterprise Features
-
-**Privacy & Control**
-
-- Air-gapped operation (no external API calls)
-- Complete data sovereignty
-- GDPR/HIPAA-compliant architecture
-- Audit trail via conversation history
-- Customizable system prompts
-
-**Customization**
-
-- Model selection (Llama, Phi, Mistral, GPT-OSS, DeepSeek)
-- Personality and tone configuration
-- Response style tuning (concise/detailed)
-- Theme customization (OKLCH color system)
-
-## 🏗️ Architecture Overview
-
-### Standard Mode (Direct LLM Interaction)
+Upload PDF, TXT, or Markdown files and ask questions:
 
 ```
-User Query → FastAPI Backend → Ollama LLM → Streaming Response
+Example Workflow:
+1. Upload: company-policy.pdf
+2. Ask: "What is the vacation policy?"
+3. Get: Answer with exact page references
 ```
 
-**Use Case:** General conversations, coding assistance, creative tasks
+The AI reads your documents and answers based on what's actually in them.
 
-### RAG Mode (Document-Enhanced)
+### Help With Programming
+
+- Write code in any language
+- Find and fix bugs
+- Review code for improvements
+- Explain how code works
+- Suggest better ways to solve problems
+
+### Privacy and Security
 
 ```
-User Query → Vector Search (ChromaDB) → Context Retrieval
-     ↓
- System Prompt + Context + Query → Ollama LLM → Response
+Your Data Flow:
+┌──────────────┐
+│ Your Computer│  ← Everything happens here
+│  ┌────────┐  │
+│  │  AI    │  │  ← No internet needed
+│  │ Model  │  │
+│  └────────┘  │
+│  ┌────────┐  │
+│  │ Your   │  │  ← Your files stay local
+│  │ Files  │  │
+│  └────────┘  │
+└──────────────┘
+
+Cloud AI Flow:
+┌──────────────┐      ┌──────────────┐
+│ Your Computer│ ───→ │ Cloud Servers│  ← Your data leaves
+└──────────────┘      └──────────────┘
 ```
 
-**Process Flow:**
+All processing happens locally. Your data never leaves your machine.
 
-1. **Document Upload** - Files processed and chunked (500-1000 tokens)
-2. **Embedding Generation** - Sentence-transformers create vector representations
-3. **Storage** - ChromaDB persists embeddings locally
-4. **Query Processing** - Semantic search retrieves relevant chunks
-5. **Augmentation** - Context injected into system prompt
-6. **Generation** - LLM produces context-aware response
+## How It Works
 
-**Technical Details:**
+### Two Ways to Use CapybaraGPT
 
-- **Embedding Model:** `all-MiniLM-L6-v2` (384 dimensions)
-- **Similarity Metric:** Cosine similarity
-- **Storage:** Persistent ChromaDB with SQLite backend
-- **Chunking Strategy:** Recursive with overlap for context preservation
+**1. Direct Chat Mode**
+
+For general conversations and questions:
+
+```
+You → CapybaraGPT → AI Model → Answer
+```
+
+Simple and fast. Just ask a question and get an answer.
+
+**2. Document Mode (RAG)**
+
+For questions about your documents:
+
+```
+Step 1: Upload Documents
+   You → Upload PDF/TXT → Stored Locally
+
+Step 2: Ask Questions
+   Your Question → Search Documents → Find Relevant Parts → AI Reads Them → Answer with Sources
+```
+
+The AI finds the right parts of your documents and uses them to answer accurately.
+
+### Example: Document Mode in Action
+
+```
+You upload: employee-handbook.pdf (50 pages)
+
+You ask: "How many vacation days do I get?"
+
+System does:
+1. Searches the document for vacation-related content
+2. Finds: "Section 5: Time Off - Employees receive 15 days..."
+3. AI reads that section
+4. Answers: "You get 15 vacation days per year (from Section 5, page 12)"
+```
+
+### What's Under the Hood
+
+| Component               | What It Does                       |
+| ----------------------- | ---------------------------------- |
+| **React Web Interface** | What you see and interact with     |
+| **FastAPI Server**      | Handles requests and manages data  |
+| **Ollama**              | Runs the AI models                 |
+| **ChromaDB**            | Stores and searches your documents |
 
 ---
 
-## 📋 System Requirements
+## System Requirements
 
-### Software Dependencies
+### Software Needed
 
-| Component   | Version | Purpose                  | Installation                                    |
-| ----------- | ------- | ------------------------ | ----------------------------------------------- |
-| **Python**  | 3.11+   | Backend runtime          | [python.org](https://www.python.org/downloads/) |
-| **Node.js** | 18+     | Frontend build toolchain | [nodejs.org](https://nodejs.org/)               |
-| **Ollama**  | Latest  | LLM inference engine     | [ollama.com](https://ollama.com)                |
+| Program     | Version      | Download                                        |
+| ----------- | ------------ | ----------------------------------------------- |
+| **Python**  | 3.11 or 3.12 | [python.org](https://www.python.org/downloads/) |
+| **Node.js** | 18 or newer  | [nodejs.org](https://nodejs.org/)               |
+| **Ollama**  | Latest       | [ollama.com](https://ollama.com)                |
+
+**Note:** Python 3.13 may not work. Stick with 3.11 or 3.12.
 
 ### Hardware Recommendations
 
-| Configuration   | CPU       | RAM   | GPU       | Use Case                    |
-| --------------- | --------- | ----- | --------- | --------------------------- |
-| **Minimum**     | 4 cores   | 8GB   | None      | Small models (phi3:mini)    |
-| **Recommended** | 8 cores   | 16GB  | 4GB VRAM  | Medium models (llama3.1:8b) |
-| **Optimal**     | 16+ cores | 32GB+ | 8GB+ VRAM | Large models (gpt-oss:20b)  |
+| Setup        | CPU       | RAM   | GPU        | Storage | Best For                     |
+| ------------ | --------- | ----- | ---------- | ------- | ---------------------------- |
+| **Basic**    | 4 cores   | 8GB   | Not needed | 10GB    | Testing, small models        |
+| **Standard** | 8 cores   | 16GB  | 4GB VRAM   | 25GB    | Daily use, medium models     |
+| **High-End** | 16+ cores | 32GB+ | 8GB+ VRAM  | 50GB+   | Large models, many documents |
 
-### Environment Verification
+**GPU Support:**
+
+- NVIDIA cards (RTX 3060 or better)
+- AMD cards (RX 6000 series)
+- Apple M1/M2/M3 (works automatically)
+
+**Storage Breakdown:**
+
+- Program files: 5GB
+- AI models: 2GB-40GB each
+- Your documents: 100MB per 1000 files
+
+### Check Your Setup
+
+Run this command to verify everything is ready:
 
 ```powershell
-# Run diagnostics
 .\check-env.ps1
-
-# Expected output:
-# ✓ Python 3.11+ detected
-# ✓ Node.js 18+ detected
-# ✓ Ollama service running
-# ✓ Ports 3000, 8000 available
 ```
 
-## 🎨 Configuration
+You should see:
 
-### Model Selection
+```
+✓ Python 3.11+ detected
+✓ Node.js 18+ detected
+✓ Ollama running
+✓ Ports available
+✓ GPU detected (if you have one)
+```
 
-**Available Models:**
+If you see errors, check the [troubleshooting guide](docs/TROUBLESHOOTING.md).
 
-| Model         | Parameters | Speed  | Quality    | Use Case             |
-| ------------- | ---------- | ------ | ---------- | -------------------- |
-| `phi3:mini`   | 3.8B       | ⚡⚡⚡ | ⭐⭐       | Fast prototyping     |
-| `llama3.1:8b` | 8B         | ⚡⚡   | ⭐⭐⭐     | Balanced performance |
-| `gpt-oss:20b` | 20B        | ⚡     | ⭐⭐⭐⭐   | Production quality   |
-| `deepseek-r1` | Varies     | ⚡     | ⭐⭐⭐⭐⭐ | Advanced reasoning   |
+## Configuration
 
-**Installation:**
+### Choosing AI Models
+
+Different models work better for different tasks:
+
+| Model           | Size         | Speed     | Quality   | Best For                      |
+| --------------- | ------------ | --------- | --------- | ----------------------------- |
+| **phi3:mini**   | Small (3.8B) | Very Fast | Good      | Quick tasks, older computers  |
+| **llama3.1:8b** | Medium (8B)  | Fast      | Great     | Most everyday tasks           |
+| **gpt-oss:20b** | Large (20B)  | Medium    | Excellent | High accuracy, production use |
+| **deepseek-r1** | Medium-Large | Medium    | Excellent | Math and logic problems       |
+
+**How to Install Models:**
 
 ```bash
-# Pull model from Ollama registry
+# Download a model
 ollama pull llama3.1
 
-# Verify installation
+# See what models you have
 ollama list
 
-# Test model
-ollama run llama3.1 "Hello, world!"
+# Test a model
+ollama run llama3.1 "Say hello"
+
+# Delete a model you don't need
+ollama rm phi3:mini
 ```
 
-**Runtime Selection:**
+**Switching Models:**
+Use the dropdown menu in the web interface to switch between models anytime.
 
-- Dynamic model switching via UI dropdown (no restart required)
-- Auto-detection of installed models
-- Per-conversation model persistence
+### Customizing Behavior
 
-### Application Configuration
+Click the settings icon (⚙️) to customize:
 
-**UI Customization:**
+**How the AI Responds:**
 
-- Access Settings (⚙️) in sidebar
+- Style: Professional, casual, or technical
+- Length: Brief answers or detailed explanations
+- Tone: Formal, friendly, or neutral
 
-- **Response Style** - Professional, casual, or default
-- **Conciseness** - Brief or detailed responses
-- **Tone** - Warm, enthusiastic, formal, etc.
-- **Emoji Usage** - More, less, or default
-- **Theme** - Dark or light mode
+**Visual Settings:**
 
-### Change Ports
+- Dark or light theme
 
-- **Backend**: Edit `backend/app.py` (default: 8000)
-- **Frontend**: Edit `frontend/vite.config.js` (default: 3000)
+### Changing Ports
 
-### Speed Up AI Responses ⚡
+If ports 3000 or 8000 are already in use:
 
-**Backend code has detailed comments for tuning:**
+```python
+# Backend (edit backend/app.py)
+port=8000  # Change to any available port
 
-1. **`backend/ollama_client.py`** - Adjust these for faster responses:
-
-   - `num_predict`: Lower = faster (try 1024)
-   - `num_ctx`: Lower = faster (try 1024)
-   - `num_thread`: Higher = faster if CPU allows (try 16)
-   - `num_gpu`: Set to `-1` to use all GPU layers (fastest)
-   - `timeout`: Lower to fail faster (try 120)
-
-2. **`backend/rag.py`** - Adjust these for faster RAG:
-
-   - `n_results`: Number of document chunks (try 1 for speed)
-   - `doc_truncated`: Character limit per chunk (try 300)
-   - `history[-2:]`: Conversation memory (try `[-1:]` for speed)
-   - Truncation limit: 150 chars (try 100)
-
-3. **System Prompts** - Edit in `backend/rag.py`:
-   - Shorter prompts = faster responses
-   - Customize AI personality and behavior
-   - All locations marked with 🎯 comments
-
-**All tuning options are documented with inline comments in the code!**
-
-## 💡 Usage Examples
-
-**General Questions:**
-
-```
-"Explain quantum computing in simple terms"
-"Write a Python function to sort a list"
-"What are the health benefits of meditation?"
+# Frontend (edit frontend/vite.config.js)
+port: 3000  # Change to any available port
 ```
 
-**Coding Help:**
+### Performance Settings
 
-```
-"Debug this JavaScript error: [paste code]"
-"How do I implement a binary search tree?"
-"Review this code for best practices"
-```
+**For Faster Responses** (edit `backend/ollama_client.py`):
 
-**Document Analysis:**
-
-```
-Upload a PDF, then ask:
-"Summarize the main points of this document"
-"What does section 3 say about data privacy?"
-"Extract all the key dates mentioned"
+```python
+num_ctx: 1024      # Lower = faster
+num_predict: 1024  # Lower = faster
+num_thread: 16     # Higher = faster (if your CPU can handle it)
+num_gpu: -1        # Use GPU (much faster)
 ```
 
-**Creative Tasks:**
+**For Document Search** (edit `backend/rag.py`):
 
+```python
+n_results: 1       # Search fewer documents
+doc_truncated: 300 # Use shorter text chunks
 ```
-"Write a short story about a time traveler"
-"Brainstorm 10 business ideas for a coffee shop"
-"Create a workout plan for beginners"
-```
 
-## 🔧 Troubleshooting
+All settings have comments in the code explaining what they do (look for 🎯 and ⚡ markers).
 
-<details>
-<summary><b>Ollama not connecting?</b></summary>
+## Troubleshooting
+
+### Common Problems
+
+**Problem: Can't connect to Ollama**
 
 ```bash
-ollama serve  # Ensure Ollama is running
+# Make sure Ollama is running
+ollama serve
+
+# Test if it's working
+curl http://localhost:11434/api/tags
 ```
 
-</details>
-
-<details>
-<summary><b>Port already in use?</b></summary>
+**Problem: Port already in use**
 
 ```powershell
-.\check-env.ps1  # Check port conflicts
+# Find what's using the port
+netstat -ano | findstr :3000
+netstat -ano | findstr :8000
+
+# Stop the program using that port
+taskkill /PID [number] /F
+
+# Or change the port in the config files
 ```
 
-</details>
-
-<details>
-<summary><b>Dependencies failing?</b></summary>
+**Problem: Installation fails**
 
 ```powershell
+# Update pip first
+python -m pip install --upgrade pip
+
+# Try installing again
 pip install -r backend/requirements.txt
-npm install --prefix frontend
+
+# Still not working? Check your Python version
+# (Needs Python 3.11 or 3.12, not 3.13)
 ```
 
-</details>
-
-**Need more help?** → [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
-
----
-
-## 📚 Documentation
-
-- **[docs/OLLAMA_INSTALL.md](docs/OLLAMA_INSTALL.md)** - Complete Ollama installation guide
-- **[docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** - Fix common problems
-- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - How it works under the hood
-- **[docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)** - Help improve this project
-
-## 🔗 API Documentation
-
-When running, visit **http://localhost:8000/docs** for interactive API documentation.
-
-## ✨ Key Features
-
-### 💬 Chat Interface
-
-- **Streaming Responses** - Real-time AI generation
-- **Message Actions** - Copy, edit, regenerate messages
-- **Stop Generation** - Interrupt AI mid-response
-- **Chat History** - Collapsible sidebar with search
-- **Memory Control** - Temporary or saved conversations
-
-### 🎨 Customization
-
-- **Theme System** - Dark/light mode with OKLCH colors
-- **Model Selector** - Switch between AI models instantly
-- **Settings Panel** - Personalize AI personality and tone
-- **Code Highlighting** - Syntax highlighting with copy buttons
-
-### 📄 Document Intelligence
-
-- **Multi-format Support** - PDF, TXT, Markdown
-- **RAG Integration** - ChromaDB vector search
-- **Context-aware** - AI uses document context
-
-### ⚡ Performance
-
-- **GPU Acceleration** - Automatic GPU detection
-- **Optimized RAG** - Fast document retrieval
-- **Tunable Parameters** - All settings documented in code
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-**Open Source Commitment:**
-
-- Free for commercial and personal use
-- Modification and distribution permitted
-- No warranty or liability
-
----
-
-## 🤝 Contributing
-
-We welcome contributions from the community!
-
-**Ways to Contribute:**
-
-- 🐛 Report bugs via GitHub Issues
-- 💡 Suggest features or improvements
-- 📖 Improve documentation
-- 🔧 Submit pull requests
-
-**Development Setup:**
+**Problem: AI responses are very slow**
 
 ```bash
-git clone https://github.com/hazavi/capybara-v2.git
-cd capybara-v2
-.\check-env.ps1
+# Check if GPU is working (NVIDIA cards)
+nvidia-smi
+
+# Make sure GPU is enabled in backend/ollama_client.py
+# Look for: num_gpu: -1
+```
+
+**Problem: Document upload not working**
+
+```powershell
+# Delete the database and restart
+Remove-Item -Recurse -Force embeddings/
 .\start.ps1
 ```
 
-**Guidelines:** See [CONTRIBUTING.md](docs/CONTRIBUTING.md)
+### Quick Checks
 
----
+```powershell
+# Run system check
+.\check-env.ps1
 
-## 📚 Additional Resources
+# See what models you have
+ollama list
 
-- **Documentation:** [docs/](docs/) - Comprehensive guides
-- **API Reference:** http://localhost:8000/docs - Interactive API docs
-- **Issue Tracker:** GitHub Issues - Bug reports and feature requests
-- **Changelog:** [CHANGELOG.md](docs/CHANGELOG.md) - Version history
+# Test the backend
+curl http://localhost:8000/health
+```
 
----
+### Need More Help?
 
-## 💬 Support
+- Read the detailed guide: [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
+- Search for similar issues: [GitHub Issues](https://github.com/hazavi/capybara-v2/issues)
+- Report a new problem with:
+  - Your operating system
+  - Error messages
+  - Output from `.\check-env.ps1`
 
-**Having trouble?**
+## Key Features
 
-- 📖 Check [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
-- 🔍 Search existing GitHub Issues
-- 💡 Open a new issue with detailed information
+### Chat Interface
+
+- Real-time streaming responses (see answers as they're generated)
+- Copy, edit, or regenerate any message
+- Stop generation anytime
+- Save conversations or use temporary sessions
+
+### Customization
+
+- Switch between dark and light themes
+- Change AI models instantly (no restart needed)
+- Adjust response style (professional, casual, etc.)
+- Control answer length (brief or detailed)
+- Syntax highlighting for code in 100+ languages
+
+### Document Features
+
+- Upload PDF, TXT, and Markdown files
+- Fast semantic search finds relevant information
+- AI cites exact sources (page numbers, sections)
+- Add new documents anytime
+- Everything stored locally on your computer
+
+### Performance
+
+- Automatic GPU detection and use
+- Configurable for your hardware
+- Parallel processing for multiple documents
+- All settings explained with comments in code
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+**What this means:**
+
+- Free for personal and commercial use
+- Modify it however you want
+- Share it with others
+- No warranty included
+
+You don't have to give credit, but it's appreciated!
+
+## Documentation
+
+### Available Guides
+
+| Document                                      | What's Inside                     |
+| --------------------------------------------- | --------------------------------- |
+| [INDEX.md](docs/INDEX.md)                     | All documentation in one place    |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md)       | How the system works              |
+| [OLLAMA_INSTALL.md](docs/OLLAMA_INSTALL.md)   | Installing Ollama (all platforms) |
+| [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Fixing common problems            |
+| [CONTRIBUTING.md](docs/CONTRIBUTING.md)       | How to contribute code            |
+| [CHANGELOG.md](docs/CHANGELOG.md)             | What's new in each version        |
+
+### API Documentation
+
+When the app is running, visit **http://localhost:8000/docs** for:
+
+- List of all API endpoints
+- Try the API directly in your browser
+- See request/response examples
 
 ---
 
 <div align="center">
 
-[Report Bug](https://github.com/hazavi/capybara-v2/issues) · [Request Feature](https://github.com/hazavi/capybara-v2/issues) · [Documentation](docs/)
+### Found this useful?
+
+⭐ Star the repo  
+🐛 Report bugs  
+💡 Suggest features  
+📢 Share with others
+
+[![Report Bug](https://img.shields.io/badge/Report-Bug-red?style=for-the-badge)](https://github.com/hazavi/capybara-v2/issues)
+[![Request Feature](https://img.shields.io/badge/Request-Feature-blue?style=for-the-badge)](https://github.com/hazavi/capybara-v2/issues)
+[![Documentation](https://img.shields.io/badge/Read-Documentation-green?style=for-the-badge)](docs/)
+
+_Private AI for everyone_
 
 </div>
